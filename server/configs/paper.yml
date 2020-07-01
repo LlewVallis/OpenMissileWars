@@ -1,0 +1,4 @@
+save-player-data: false
+world-settings:
+  default:
+    optimize-explosions: true

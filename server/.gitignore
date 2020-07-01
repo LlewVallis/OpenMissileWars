@@ -1,0 +1,6 @@
+*
+!.gitignore
+!paper.jar
+!start.sh
+!configs
+!plugins

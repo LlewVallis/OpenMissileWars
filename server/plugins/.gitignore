@@ -1,0 +1,4 @@
+!.gitignore
+!openmissilewars.jar
+!bStats
+!bStats/config.yml
