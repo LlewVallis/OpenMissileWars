@@ -1,5 +1,10 @@
 package org.astropeci.omw;
 
+import org.astropeci.commandbuilder.CommandBuilder;
+import org.astropeci.commandbuilder.CommandContext;
+import org.astropeci.commandbuilder.ExecuteCommand;
+import org.astropeci.commandbuilder.ReflectionCommandCallback;
+import org.astropeci.commandbuilder.arguments.StringArgument;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.annotation.plugin.ApiVersion;
 import org.bukkit.plugin.java.annotation.plugin.Description;
@@ -14,4 +19,22 @@ import org.bukkit.plugin.java.annotation.plugin.author.Author;
 @Website("https://github.com/LlewVallis/OpenMissileWars")
 public class OpenMissileWarsPlugin extends JavaPlugin {
 
+
+    @Override
+    public void onEnable() {
+        CommandBuilder.registerCommand(
+                this,
+                "echo",
+                "Echoes a message back to you",
+                "echo <message>",
+                null,
+                new CommandBuilder().addArgument(new StringArgument()).build(new ReflectionCommandCallback(this))
+        );
+    }
+
+    @ExecuteCommand
+    public boolean echo(CommandContext ctx, String value) {
+        ctx.sender.sendMessage("Hello " + value);
+        return true;
+    }
 }

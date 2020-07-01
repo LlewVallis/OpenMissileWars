@@ -17,6 +17,10 @@ if [ ! -f eula.txt ]; then
   esac
 fi
 
+if [ ! -z $JVM_DEBUG_PORT ]; then
+  DEBUG_ARGUMENTS="-agentlib:jdwp=transport=dt_socket,server=y,address=$JVM_DEBUG_PORT,suspend=n"
+fi
+
 cp -r configs/* .
 
 java -Xms$ALLOCATED_MEMORY -Xmx$ALLOCATED_MEMORY -XX:+UseG1GC -XX:+ParallelRefProcEnabled \
@@ -27,4 +31,5 @@ java -Xms$ALLOCATED_MEMORY -Xmx$ALLOCATED_MEMORY -XX:+UseG1GC -XX:+ParallelRefPr
   -XX:G1MixedGCLiveThresholdPercent=90 -XX:G1RSetUpdatingPauseTimePercent=5 \
   -XX:SurvivorRatio=32 -XX:+PerfDisableSharedMem -XX:MaxTenuringThreshold=1 \
   -Dusing.aikars.flags=https://mcflags.emc.gs -Daikars.new.flags=true \
+  $DEBUG_ARGUMENTS \
   -jar paper.jar nogui

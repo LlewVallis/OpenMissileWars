@@ -2,6 +2,9 @@ settings:
   player-shuffle: 100
 stats:
   disable-saving: true
+world-settings:
+  default:
+    verbose: false
 advancements:
   disable-saving: true
   disabled:
