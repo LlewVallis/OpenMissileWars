@@ -1,10 +1,9 @@
-package org.astropeci.commandbuilder;
+package org.astropeci.omw.commandbuilder;
 
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
-import org.bukkit.Color;
+import org.bukkit.entity.Player;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -51,6 +50,14 @@ public class ReflectionCommandCallback implements CommandCallback {
 
     private boolean runCallback(Method callbackMethod, List<Object> argumentValues,
                                        List<Object> variadicArgumentValues, CommandContext context) {
+        if (callbackMethod.isAnnotationPresent(PlayerOnlyCommand.class) && !(context.sender instanceof Player)) {
+            TextComponent message = new TextComponent("Only players can use this command");
+            message.setColor(ChatColor.RED);
+
+            context.sender.spigot().sendMessage(message);
+            return true;
+        }
+
         checkCallback(callbackMethod, argumentValues, variadicArgumentValues);
 
         try {

@@ -1,8 +1,8 @@
-package org.astropeci.commandbuilder.arguments;
+package org.astropeci.omw.commandbuilder.arguments;
 
-import org.astropeci.commandbuilder.ArgumentParseException;
-import org.astropeci.commandbuilder.ArgumentParser;
-import org.astropeci.commandbuilder.CommandContext;
+import org.astropeci.omw.commandbuilder.ArgumentParseException;
+import org.astropeci.omw.commandbuilder.ArgumentParser;
+import org.astropeci.omw.commandbuilder.CommandContext;
 
 import java.util.List;
 import java.util.Set;
@@ -11,8 +11,12 @@ public class StringSetArgument implements ArgumentParser<String> {
 
     private final Set<String> possibleValues;
 
-    public StringSetArgument(Set<String> possibleValues, boolean optional) {
+    public StringSetArgument(Set<String> possibleValues) {
         this.possibleValues = possibleValues;
+    }
+
+    public StringSetArgument(String... possibleValues) {
+        this(Set.of(possibleValues));
     }
 
     @Override

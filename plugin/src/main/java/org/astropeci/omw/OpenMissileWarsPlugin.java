@@ -1,10 +1,12 @@
 package org.astropeci.omw;
 
-import org.astropeci.commandbuilder.CommandBuilder;
-import org.astropeci.commandbuilder.CommandContext;
-import org.astropeci.commandbuilder.ExecuteCommand;
-import org.astropeci.commandbuilder.ReflectionCommandCallback;
-import org.astropeci.commandbuilder.arguments.StringArgument;
+import org.astropeci.omw.commands.*;
+import org.astropeci.omw.listeners.NightVisionHandler;
+import org.astropeci.omw.listeners.SpawnHandler;
+import org.astropeci.omw.worlds.ArenaPool;
+import org.astropeci.omw.worlds.Worlds;
+import org.bukkit.Bukkit;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.annotation.plugin.ApiVersion;
 import org.bukkit.plugin.java.annotation.plugin.Description;
@@ -19,22 +21,32 @@ import org.bukkit.plugin.java.annotation.plugin.author.Author;
 @Website("https://github.com/LlewVallis/OpenMissileWars")
 public class OpenMissileWarsPlugin extends JavaPlugin {
 
+    private ArenaPool arenaPool;
 
     @Override
     public void onEnable() {
-        CommandBuilder.registerCommand(
-                this,
-                "echo",
-                "Echoes a message back to you",
-                "echo <message>",
-                null,
-                new CommandBuilder().addArgument(new StringArgument()).build(new ReflectionCommandCallback(this))
-        );
+        arenaPool = new ArenaPool();
+
+        Worlds.configureWorld(Bukkit.getWorld("world"));
+        Worlds.cleanArenas();
+
+        new HubCommand().register(this);
+        new TemplateCommand().register(this);
+        new ArenaCommand(arenaPool).register(this);
+        new ListArenasCommand(arenaPool).register(this);
+        new CreateArenaCommand(arenaPool).register(this);
+        new DeleteArenaCommand(arenaPool).register(this);
+
+        registerEventHandler(new SpawnHandler());
+        registerEventHandler(new NightVisionHandler());
     }
 
-    @ExecuteCommand
-    public boolean echo(CommandContext ctx, String value) {
-        ctx.sender.sendMessage("Hello " + value);
-        return true;
+    @Override
+    public void onDisable() {
+        arenaPool.close();
+    }
+
+    private void registerEventHandler(Listener listener) {
+        getServer().getPluginManager().registerEvents(listener, this);
     }
 }

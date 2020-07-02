@@ -1,8 +1,8 @@
-package org.astropeci.commandbuilder.arguments;
+package org.astropeci.omw.commandbuilder.arguments;
 
-import org.astropeci.commandbuilder.ArgumentParseException;
-import org.astropeci.commandbuilder.ArgumentParser;
-import org.astropeci.commandbuilder.CommandContext;
+import org.astropeci.omw.commandbuilder.ArgumentParseException;
+import org.astropeci.omw.commandbuilder.ArgumentParser;
+import org.astropeci.omw.commandbuilder.CommandContext;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.command.BlockCommandSender;

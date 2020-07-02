@@ -1,4 +1,4 @@
-package org.astropeci.commandbuilder;
+package org.astropeci.omw.commandbuilder;
 
 public class ReflectionCommandCallbackException extends RuntimeException {
 

@@ -1,7 +1,7 @@
-package org.astropeci.commandbuilder;
+package org.astropeci.omw.commandbuilder;
 
-import org.astropeci.commandbuilder.arguments.OptionalOverrideArgument;
-import org.astropeci.commandbuilder.arguments.TabOverrideArgument;
+import org.astropeci.omw.commandbuilder.arguments.OptionalOverrideArgument;
+import org.astropeci.omw.commandbuilder.arguments.TabOverrideArgument;
 
 import java.util.List;
 import java.util.Set;

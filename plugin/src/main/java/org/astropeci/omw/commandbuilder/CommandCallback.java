@@ -1,4 +1,4 @@
-package org.astropeci.commandbuilder;
+package org.astropeci.omw.commandbuilder;
 
 import java.util.List;
 

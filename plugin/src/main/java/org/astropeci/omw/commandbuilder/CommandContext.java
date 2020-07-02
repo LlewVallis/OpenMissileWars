@@ -1,4 +1,4 @@
-package org.astropeci.commandbuilder;
+package org.astropeci.omw.commandbuilder;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
