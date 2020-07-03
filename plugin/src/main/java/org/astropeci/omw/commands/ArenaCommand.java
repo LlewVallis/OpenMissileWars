@@ -23,7 +23,7 @@ public class ArenaCommand {
         this.arenaPool = arenaPool;
 
         executor = new CommandBuilder()
-                .addArgument(new StringArgument())
+                .addArgument(new ArenaArgument(arenaPool))
                 .build(new ReflectionCommandCallback(this));
     }
 
@@ -40,21 +40,12 @@ public class ArenaCommand {
 
     @PlayerOnlyCommand
     @ExecuteCommand
-    public boolean execute(CommandContext ctx, String arenaName) {
-        Optional<Arena> arenaOptional = arenaPool.get(arenaName);
+    public boolean execute(CommandContext ctx, NamedArena arena) {
+        arena.arena.sendPlayer((Player) ctx.sender);
 
-        arenaOptional.ifPresentOrElse(arena -> {
-            arena.sendPlayer((Player) ctx.sender);
-
-            TextComponent message = new TextComponent("Sending you to " + arenaName);
-            message.setColor(ChatColor.GREEN);
-            ctx.sender.spigot().sendMessage(message);
-        }, () -> {
-            TextComponent message = new TextComponent("No arena exists called " + arenaName);
-            message.setColor(ChatColor.RED);
-            ctx.sender.spigot().sendMessage(message);
-
-        });
+        TextComponent message = new TextComponent("Sending you to " + arena.name);
+        message.setColor(ChatColor.GREEN);
+        ctx.sender.spigot().sendMessage(message);
 
         return true;
     }

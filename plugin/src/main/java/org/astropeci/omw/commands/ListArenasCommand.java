@@ -10,7 +10,6 @@ import org.astropeci.omw.worlds.ArenaPool;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.plugin.Plugin;
 
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ListArenasCommand {
@@ -38,7 +37,7 @@ public class ListArenasCommand {
     @ExecuteCommand
     public boolean execute(CommandContext ctx) {
         String arenaString = arenaPool.allArenas().stream()
-                .map(Map.Entry::getKey)
+                .map(arena -> arena.name)
                 .collect(Collectors.joining(", "));
 
         TextComponent message;

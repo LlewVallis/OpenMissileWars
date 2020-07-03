@@ -22,7 +22,7 @@ public class DeleteArenaCommand {
         this.arenaPool = arenaPool;
 
         executor = new CommandBuilder()
-                .addArgument(new StringArgument())
+                .addArgument(new ArenaArgument(arenaPool))
                 .build(new ReflectionCommandCallback(this));
     }
 
@@ -38,17 +38,15 @@ public class DeleteArenaCommand {
     }
 
     @ExecuteCommand
-    public boolean execute(CommandContext ctx, String name) {
+    public boolean execute(CommandContext ctx, NamedArena arena) {
         try {
-            arenaPool.delete(name);
+            arenaPool.delete(arena.name);
 
-            TextComponent message = new TextComponent("Deleted " + name);
+            TextComponent message = new TextComponent("Deleted " + arena.name);
             message.setColor(ChatColor.GREEN);
             ctx.sender.spigot().sendMessage(message);
         } catch (NoSuchArenaException e) {
-            TextComponent message = new TextComponent("No arena exists called " + name);
-            message.setColor(ChatColor.RED);
-            ctx.sender.spigot().sendMessage(message);
+            throw new RuntimeException(e);
         }
 
         return true;

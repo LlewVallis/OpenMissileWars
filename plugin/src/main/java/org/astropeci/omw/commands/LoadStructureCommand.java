@@ -7,7 +7,6 @@ import org.astropeci.omw.commandbuilder.CommandContext;
 import org.astropeci.omw.commandbuilder.ExecuteCommand;
 import org.astropeci.omw.commandbuilder.ReflectionCommandCallback;
 import org.astropeci.omw.commandbuilder.arguments.CoordArgument;
-import org.astropeci.omw.commandbuilder.arguments.StringArgument;
 import org.astropeci.omw.commandbuilder.arguments.StringSetArgument;
 import org.astropeci.omw.structures.Structure;
 import org.bukkit.Location;
@@ -27,7 +26,7 @@ public class LoadStructureCommand {
 
     public LoadStructureCommand() {
         executor = new CommandBuilder()
-                .addArgument(new StringArgument())
+                .addArgument(new StructureArgument())
                 .addArgument(new CoordArgument(CoordArgument.Axis.X))
                 .addArgument(new CoordArgument(CoordArgument.Axis.Y))
                 .addArgument(new CoordArgument(CoordArgument.Axis.Z))
@@ -47,7 +46,7 @@ public class LoadStructureCommand {
     }
 
     @ExecuteCommand
-    public boolean execute(CommandContext ctx, String name, int x, int y, int z, String direction) {
+    public boolean execute(CommandContext ctx, Structure structure, int x, int y, int z, String direction) {
         Optional<World> worldOptional = getSenderWorld(ctx.sender);
 
         if (worldOptional.isEmpty()) {
@@ -78,16 +77,15 @@ public class LoadStructureCommand {
                 break;
         }
 
-        Structure structure = new Structure(name);
         Location location = new Location(worldOptional.get(), x, y, z);
         boolean success = structure.load(location, rotation);
 
         TextComponent message;
         if (success) {
-            message = new TextComponent("Loaded " + name);
+            message = new TextComponent("Loaded " + structure.getName());
             message.setColor(ChatColor.GREEN);
         } else {
-            message = new TextComponent("Could not load " + name);
+            message = new TextComponent("Could not load " + structure.getName());
             message.setColor(ChatColor.RED);
         }
 

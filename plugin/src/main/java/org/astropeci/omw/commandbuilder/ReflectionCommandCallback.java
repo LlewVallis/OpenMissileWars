@@ -40,6 +40,7 @@ public class ReflectionCommandCallback implements CommandCallback {
         errorMessage.setColor(ChatColor.RED);
 
         TextComponent usageMessage = new TextComponent("Usage: " + context.command.getUsage());
+        usageMessage.setItalic(true);
         usageMessage.setColor(ChatColor.RED);
 
         context.sender.spigot().sendMessage(errorMessage);

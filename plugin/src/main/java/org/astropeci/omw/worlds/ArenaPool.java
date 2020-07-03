@@ -1,8 +1,10 @@
 package org.astropeci.omw.worlds;
 
+import org.astropeci.omw.commands.NamedArena;
 import org.bukkit.Bukkit;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ArenaPool implements AutoCloseable {
 
@@ -25,7 +27,7 @@ public class ArenaPool implements AutoCloseable {
         Arena arena = arenas.remove(name);
 
         if (arena == null) {
-            throw new NoSuchArenaException();
+            throw new NoSuchArenaException(name, name + " does not exist");
         } else {
             Bukkit.getLogger().info("Deleting arena " + name);
             arena.close();
@@ -36,8 +38,10 @@ public class ArenaPool implements AutoCloseable {
         return Optional.ofNullable(arenas.get(name));
     }
 
-    public Set<Map.Entry<String, Arena>> allArenas() {
-        return arenas.entrySet();
+    public Set<NamedArena> allArenas() {
+        return arenas.entrySet().stream()
+                .map(entry -> new NamedArena(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toSet());
     }
 
     @Override
