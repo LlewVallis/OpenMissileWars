@@ -36,6 +36,7 @@ public class OpenMissileWarsPlugin extends JavaPlugin {
         new ListArenasCommand(arenaPool).register(this);
         new CreateArenaCommand(arenaPool).register(this);
         new DeleteArenaCommand(arenaPool).register(this);
+        new LoadStructureCommand().register(this);
 
         registerEventHandler(new SpawnHandler());
         registerEventHandler(new NightVisionHandler());
