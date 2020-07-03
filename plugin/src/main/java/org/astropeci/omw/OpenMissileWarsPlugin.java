@@ -3,6 +3,7 @@ package org.astropeci.omw;
 import org.astropeci.omw.commands.*;
 import org.astropeci.omw.listeners.NightVisionHandler;
 import org.astropeci.omw.listeners.SpawnHandler;
+import org.astropeci.omw.listeners.WelcomeHandler;
 import org.astropeci.omw.worlds.ArenaPool;
 import org.astropeci.omw.worlds.Worlds;
 import org.bukkit.Bukkit;
@@ -30,6 +31,8 @@ public class OpenMissileWarsPlugin extends JavaPlugin {
         Worlds.configureWorld(Bukkit.getWorld("world"));
         Worlds.cleanArenas();
 
+        NightVisionHandler nightVisionHandler = new NightVisionHandler();
+
         new HubCommand().register(this);
         new TemplateCommand().register(this);
         new ArenaCommand(arenaPool).register(this);
@@ -37,9 +40,11 @@ public class OpenMissileWarsPlugin extends JavaPlugin {
         new CreateArenaCommand(arenaPool).register(this);
         new DeleteArenaCommand(arenaPool).register(this);
         new LoadStructureCommand().register(this);
+        new NightVisionCommand(nightVisionHandler).register(this);
 
         registerEventHandler(new SpawnHandler());
-        registerEventHandler(new NightVisionHandler());
+        registerEventHandler(new WelcomeHandler());
+        registerEventHandler(nightVisionHandler);
     }
 
     @Override

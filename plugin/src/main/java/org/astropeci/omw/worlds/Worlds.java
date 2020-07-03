@@ -16,6 +16,7 @@ public class Worlds {
         world.setKeepSpawnInMemory(false);
         world.setDifficulty(Difficulty.EASY);
         world.setSpawnLocation(0, 64, 0);
+
         world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
         world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
         world.setGameRule(GameRule.DO_ENTITY_DROPS, false);
@@ -25,6 +26,9 @@ public class Worlds {
         world.setGameRule(GameRule.KEEP_INVENTORY, true);
         world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
         world.setGameRule(GameRule.SPECTATORS_GENERATE_CHUNKS, false);
+        world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, false);
+
+        world.setFullTime(18000);
     }
 
     public static void cleanArenas() {

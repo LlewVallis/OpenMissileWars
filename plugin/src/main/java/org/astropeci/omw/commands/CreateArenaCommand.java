@@ -1,6 +1,7 @@
 package org.astropeci.omw.commands;
 
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.astropeci.omw.commandbuilder.CommandBuilder;
 import org.astropeci.omw.commandbuilder.CommandContext;
@@ -41,8 +42,17 @@ public class CreateArenaCommand {
         try {
             arenaPool.create(name);
 
-            TextComponent message = new TextComponent("Created " + name);
+            TextComponent clickToJoinComponent = new TextComponent("here");
+            clickToJoinComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/arena " + name));
+            clickToJoinComponent.setBold(true);
+
+            TextComponent message = new TextComponent(
+                    new TextComponent("Created " + name + ", click "),
+                    clickToJoinComponent,
+                    new TextComponent(" to join")
+            );
             message.setColor(ChatColor.GREEN);
+
             ctx.sender.spigot().sendMessage(message);
         } catch (ArenaAlreadyExistsException e) {
             TextComponent message = new TextComponent("An arena with that name already exists");

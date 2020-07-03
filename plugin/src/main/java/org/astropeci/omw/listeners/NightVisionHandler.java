@@ -8,14 +8,38 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+
 public class NightVisionHandler implements Listener {
 
+    private Set<UUID> nightVisionExclusions = new HashSet<>();
+
     private void giveNightVision(Player player) {
+        if (nightVisionExclusions.contains(player.getUniqueId())) {
+            return;
+        }
+
         player.addPotionEffect(new PotionEffect(
                 PotionEffectType.NIGHT_VISION,
                 Integer.MAX_VALUE,
                 0
         ));
+    }
+
+    public boolean toggleNightVision(Player player) {
+        UUID uuid = player.getUniqueId();
+
+        if (nightVisionExclusions.contains(uuid)) {
+            nightVisionExclusions.remove(uuid);
+            giveNightVision(player);
+        } else {
+            nightVisionExclusions.add(uuid);
+            player.removePotionEffect(PotionEffectType.NIGHT_VISION);
+        }
+
+        return !nightVisionExclusions.contains(uuid);
     }
 
     @EventHandler
