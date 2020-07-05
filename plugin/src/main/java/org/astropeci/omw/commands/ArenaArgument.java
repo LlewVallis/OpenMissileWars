@@ -3,7 +3,7 @@ package org.astropeci.omw.commands;
 import org.astropeci.omw.commandbuilder.ArgumentParseException;
 import org.astropeci.omw.commandbuilder.ArgumentParser;
 import org.astropeci.omw.commandbuilder.CommandContext;
-import org.astropeci.omw.worlds.Arena;
+import org.astropeci.omw.game.Arena;
 import org.astropeci.omw.worlds.ArenaPool;
 
 import java.util.List;
@@ -28,7 +28,7 @@ public class ArenaArgument implements ArgumentParser<NamedArena> {
 
     @Override
     public Set<String> complete(List<Object> parsedArguments, String currentArgument, int position, CommandContext context) {
-        return arenaPool.allArenas().stream()
+        return arenaPool.getAllArenas().stream()
                 .map(arena -> arena.name)
                 .collect(Collectors.toSet());
     }

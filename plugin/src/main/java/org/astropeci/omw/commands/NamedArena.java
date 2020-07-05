@@ -1,14 +1,11 @@
 package org.astropeci.omw.commands;
 
-import org.astropeci.omw.worlds.Arena;
+import lombok.Value;
+import org.astropeci.omw.game.Arena;
 
+@Value
 public class NamedArena {
 
     public final String name;
     public final Arena arena;
-
-    public NamedArena(String name, Arena arena) {
-        this.name = name;
-        this.arena = arena;
-    }
 }

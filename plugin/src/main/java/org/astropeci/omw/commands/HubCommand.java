@@ -10,10 +10,13 @@ import org.bukkit.plugin.Plugin;
 
 public class HubCommand {
 
+    private final Hub hub;
+
     private final TabExecutor executor;
 
-    public HubCommand() {
+    public HubCommand(Hub hub) {
         executor = new CommandBuilder().build(new ReflectionCommandCallback(this));
+        this.hub = hub;
     }
 
     public void register(Plugin plugin) {
@@ -30,7 +33,7 @@ public class HubCommand {
     @PlayerOnlyCommand
     @ExecuteCommand
     public boolean execute(CommandContext ctx) {
-        Hub.sendPlayer((Player) ctx.sender);
+        hub.sendPlayer((Player) ctx.sender);
 
         TextComponent message = new TextComponent("Sending you to the hub");
         message.setColor(ChatColor.GREEN);

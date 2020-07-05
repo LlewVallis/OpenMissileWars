@@ -36,7 +36,7 @@ public class ReflectionCommandCallback implements CommandCallback {
 
     @Override
     public boolean onFailure(CommandParseException cause, CommandContext context) {
-        TextComponent errorMessage = new TextComponent("Malformed command: " + cause.getMessage());
+        TextComponent errorMessage = new TextComponent("Incorrect command: " + cause.getMessage());
         errorMessage.setColor(ChatColor.RED);
 
         TextComponent usageMessage = new TextComponent("Usage: " + context.command.getUsage());

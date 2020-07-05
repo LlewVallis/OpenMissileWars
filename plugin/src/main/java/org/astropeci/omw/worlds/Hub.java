@@ -1,13 +1,14 @@
 package org.astropeci.omw.worlds;
 
-import org.bukkit.Bukkit;
-import org.bukkit.World;
+import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.Player;
 
+@RequiredArgsConstructor
 public class Hub {
 
-    public static void sendPlayer(Player player) {
-        World world = Bukkit.getWorld("world");
-        Worlds.send(player, world);
+    private final WorldManager worldManager;
+
+    public void sendPlayer(Player player) {
+        worldManager.send(player, worldManager.getDefaultWorld());
     }
 }

@@ -36,7 +36,7 @@ public class ListArenasCommand {
 
     @ExecuteCommand
     public boolean execute(CommandContext ctx) {
-        String arenaString = arenaPool.allArenas().stream()
+        String arenaString = arenaPool.getAllArenas().stream()
                 .map(arena -> arena.name)
                 .collect(Collectors.joining(", "));
 

@@ -3,16 +3,10 @@ package org.astropeci.omw.commands;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.astropeci.omw.commandbuilder.*;
-import org.astropeci.omw.commandbuilder.arguments.StringArgument;
-import org.astropeci.omw.commandbuilder.arguments.StringSetArgument;
-import org.astropeci.omw.worlds.Arena;
 import org.astropeci.omw.worlds.ArenaPool;
-import org.astropeci.omw.worlds.Template;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-
-import java.util.Optional;
 
 public class ArenaCommand {
 
@@ -41,7 +35,7 @@ public class ArenaCommand {
     @PlayerOnlyCommand
     @ExecuteCommand
     public boolean execute(CommandContext ctx, NamedArena arena) {
-        arena.arena.sendPlayer((Player) ctx.sender);
+        arena.arena.sendPlayerToSpawn((Player) ctx.sender);
 
         TextComponent message = new TextComponent("Sending you to " + arena.name);
         message.setColor(ChatColor.GREEN);

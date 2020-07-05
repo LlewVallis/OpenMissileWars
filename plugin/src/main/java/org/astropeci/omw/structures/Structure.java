@@ -4,26 +4,21 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Random;
-import java.util.Set;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 public class Structure {
 
-    private static final String AUTHOR = "openmissilewars";
-    private static String serverVersionCache = null;
-
     private final String name;
 
-    public Structure(String name) throws NoSuchStructureException {
-        if (!allStructures().contains(name)) {
+    /* package-private */ static final String AUTHOR = "openmissilewars";
+    private static String serverVersionCache = null;
+
+    public Structure(String name, StructurePool structurePool) throws NoSuchStructureException {
+        if (!structurePool.getAllStructureNames().contains(name)) {
             throw new NoSuchStructureException(name, name + " does not exist");
         }
 
@@ -35,23 +30,6 @@ public class Structure {
         ROTATE_90,
         ROTATE_180,
         ROTATE_270,
-    }
-
-    public static Set<String> allStructures() {
-        Path worldDirectory = Bukkit.getWorld("world").getWorldFolder().toPath();
-        Path structureDirectory = worldDirectory.resolve(Path.of("generated", AUTHOR, "structures"));
-
-        try {
-            return Files.list(structureDirectory)
-                    .filter(Files::isRegularFile)
-                    .map(path -> path.getFileName().toString())
-                    .filter(name -> name.endsWith(".nbt"))
-                    .map(name -> name.substring(0, name.lastIndexOf(".nbt")))
-                    .collect(Collectors.toSet());
-        } catch (IOException e) {
-            Bukkit.getLogger().log(Level.WARNING, "Failed to fetch structure list", e);
-            return Set.of();
-        }
     }
 
     public boolean load(Location location, Rotation rotation) {

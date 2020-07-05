@@ -9,6 +9,7 @@ import org.astropeci.omw.commandbuilder.ReflectionCommandCallback;
 import org.astropeci.omw.commandbuilder.arguments.CoordArgument;
 import org.astropeci.omw.commandbuilder.arguments.StringSetArgument;
 import org.astropeci.omw.structures.Structure;
+import org.astropeci.omw.structures.StructurePool;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.BlockCommandSender;
@@ -24,9 +25,9 @@ public class LoadStructureCommand {
 
     private final TabExecutor executor;
 
-    public LoadStructureCommand() {
+    public LoadStructureCommand(StructurePool structurePool) {
         executor = new CommandBuilder()
-                .addArgument(new StructureArgument())
+                .addArgument(new StructureArgument(structurePool))
                 .addArgument(new CoordArgument(CoordArgument.Axis.X))
                 .addArgument(new CoordArgument(CoordArgument.Axis.Y))
                 .addArgument(new CoordArgument(CoordArgument.Axis.Z))

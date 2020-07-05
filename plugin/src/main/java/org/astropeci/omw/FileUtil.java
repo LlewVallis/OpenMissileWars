@@ -7,7 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
-public class Util {
+public class FileUtil {
 
     public static void deleteRecursive(Path directory) throws IOException {
         Files.walkFileTree(directory, new SimpleFileVisitor<>() {

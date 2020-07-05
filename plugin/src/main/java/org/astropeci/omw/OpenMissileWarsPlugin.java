@@ -1,12 +1,15 @@
 package org.astropeci.omw;
 
 import org.astropeci.omw.commands.*;
+import org.astropeci.omw.game.GlobalTeamManager;
 import org.astropeci.omw.listeners.NightVisionHandler;
 import org.astropeci.omw.listeners.SpawnHandler;
 import org.astropeci.omw.listeners.WelcomeHandler;
+import org.astropeci.omw.structures.StructurePool;
 import org.astropeci.omw.worlds.ArenaPool;
-import org.astropeci.omw.worlds.Worlds;
-import org.bukkit.Bukkit;
+import org.astropeci.omw.worlds.Hub;
+import org.astropeci.omw.worlds.Template;
+import org.astropeci.omw.worlds.WorldManager;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.annotation.plugin.ApiVersion;
@@ -26,33 +29,43 @@ public class OpenMissileWarsPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        arenaPool = new ArenaPool();
+        GlobalTeamManager globalTeamManager = new GlobalTeamManager();
+        globalTeamManager.configScoreboard();
 
-        Worlds.configureWorld(Bukkit.getWorld("world"));
-        Worlds.cleanArenas();
+        WorldManager worldManager = new WorldManager(globalTeamManager);
+
+        Hub hub = new Hub(worldManager);
+        Template template = new Template(worldManager, hub);
+
+        arenaPool = new ArenaPool(template);
+        StructurePool structurePool = new StructurePool(worldManager);
+
+        worldManager.configureWorld(worldManager.getDefaultWorld());
+        worldManager.cleanArenas();
 
         NightVisionHandler nightVisionHandler = new NightVisionHandler();
 
-        new HubCommand().register(this);
-        new TemplateCommand().register(this);
+        new HubCommand(hub).register(this);
+        new TemplateCommand(template).register(this);
         new ArenaCommand(arenaPool).register(this);
         new ListArenasCommand(arenaPool).register(this);
         new CreateArenaCommand(arenaPool).register(this);
         new DeleteArenaCommand(arenaPool).register(this);
-        new LoadStructureCommand().register(this);
+        new LoadStructureCommand(structurePool).register(this);
         new NightVisionCommand(nightVisionHandler).register(this);
+        new JoinTeamCommand(globalTeamManager).register(this);
 
-        registerEventHandler(new SpawnHandler());
+        registerEventHandler(new SpawnHandler(hub));
         registerEventHandler(new WelcomeHandler());
         registerEventHandler(nightVisionHandler);
+    }
+
+    private void registerEventHandler(Listener listener) {
+        getServer().getPluginManager().registerEvents(listener, this);
     }
 
     @Override
     public void onDisable() {
         arenaPool.close();
-    }
-
-    private void registerEventHandler(Listener listener) {
-        getServer().getPluginManager().registerEvents(listener, this);
     }
 }

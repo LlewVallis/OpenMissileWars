@@ -1,35 +1,28 @@
-package org.astropeci.omw.worlds;
+package org.astropeci.omw.game;
 
+import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.astropeci.omw.Util;
+import org.astropeci.omw.FileUtil;
+import org.astropeci.omw.worlds.Hub;
+import org.astropeci.omw.worlds.WorldManager;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.UUID;
 import java.util.logging.Level;
 
+@RequiredArgsConstructor
 public class Arena implements AutoCloseable {
 
     private final World world;
+    private final WorldManager worldManager;
+    private final Hub hub;
 
-    public Arena(World world) {
-        this.world = world;
-    }
-
-    public static Arena create() {
-        String worldName = "omw-arena-" + UUID.randomUUID();
-        Bukkit.getLogger().info("Creating arena under directory " + worldName);
-
-        World world = Template.createWorld(worldName);
-        return new Arena(world);
-    }
-
-    public void sendPlayer(Player player) {
-        Worlds.send(player, world);
+    public void sendPlayerToSpawn(Player player) {
+        worldManager.send(player, world);
     }
 
     @Override
@@ -39,7 +32,7 @@ public class Arena implements AutoCloseable {
             message.setColor(ChatColor.GREEN);
             player.spigot().sendMessage(message);
 
-            Hub.sendPlayer(player);
+            hub.sendPlayer(player);
         }
 
         Bukkit.getLogger().info("Unloading arena " + world.getName());
@@ -54,7 +47,7 @@ public class Arena implements AutoCloseable {
 
         if (worldDirectory.exists()) {
             try {
-                Util.deleteRecursive(worldDirectory.toPath());
+                FileUtil.deleteRecursive(worldDirectory.toPath());
             } catch (IOException e) {
                 Bukkit.getLogger().log(Level.WARNING, "Failed to clean world files for " + world.getName(), e);
             }

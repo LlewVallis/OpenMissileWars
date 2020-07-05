@@ -11,10 +11,13 @@ import org.bukkit.plugin.Plugin;
 
 public class TemplateCommand {
 
+    private final Template template;
+
     private final TabExecutor executor;
 
-    public TemplateCommand() {
+    public TemplateCommand(Template template) {
         executor = new CommandBuilder().build(new ReflectionCommandCallback(this));
+        this.template = template;
     }
 
     public void register(Plugin plugin) {
@@ -31,7 +34,7 @@ public class TemplateCommand {
     @PlayerOnlyCommand
     @ExecuteCommand
     public boolean execute(CommandContext ctx) {
-        Template.sendPlayer((Player) ctx.sender);
+        template.sendPlayer((Player) ctx.sender);
 
         TextComponent message = new TextComponent("Sending you to the template");
         message.setColor(ChatColor.GREEN);

@@ -1,6 +1,8 @@
 package org.astropeci.omw.worlds;
 
-import org.astropeci.omw.Util;
+import lombok.RequiredArgsConstructor;
+import org.astropeci.omw.FileUtil;
+import org.astropeci.omw.game.GlobalTeamManager;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
@@ -10,9 +12,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.logging.Level;
 
-public class Worlds {
+@RequiredArgsConstructor
+public class WorldManager {
 
-    public static void configureWorld(World world) {
+    private final GlobalTeamManager globalTeamManager;
+
+    public World getDefaultWorld() {
+        return Bukkit.getWorlds().get(0);
+    }
+
+    public void configureWorld(World world) {
         world.setKeepSpawnInMemory(false);
         world.setDifficulty(Difficulty.EASY);
         world.setSpawnLocation(0, 64, 0);
@@ -26,12 +35,12 @@ public class Worlds {
         world.setGameRule(GameRule.KEEP_INVENTORY, true);
         world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
         world.setGameRule(GameRule.SPECTATORS_GENERATE_CHUNKS, false);
-        world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, false);
+        world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true);
 
         world.setFullTime(18000);
     }
 
-    public static void cleanArenas() {
+    public void cleanArenas() {
         Path worldContainer = Bukkit.getServer().getWorldContainer().toPath();
 
         try {
@@ -42,7 +51,7 @@ public class Worlds {
                     .forEach(directory -> {
                         try {
                             Bukkit.getLogger().info("Found dangling arena in directory " + directory);
-                            Util.deleteRecursive(directory);
+                            FileUtil.deleteRecursive(directory);
                         } catch (IOException e) {
                             Bukkit.getLogger().log(Level.WARNING, "Failed to delete dangling arena", e);
                         }
@@ -52,7 +61,14 @@ public class Worlds {
         }
     }
 
-    public static void send(Player player, World world) {
+    public void send(Player player, World world) {
+        Location spawnPoint = world.getSpawnLocation();
+        Location alignedSpawnPoint = new Location(world, spawnPoint.getX() + 0.5, spawnPoint.getY(), spawnPoint.getZ() + 0.5);
+
+        send(player, alignedSpawnPoint);
+    }
+
+    public void send(Player player, Location location) {
         player.getInventory().clear();
         player.setGameMode(GameMode.ADVENTURE);
         player.setFlying(false);
@@ -62,8 +78,8 @@ public class Worlds {
         player.setFallDistance(0);
         player.setVelocity(new Vector());
 
-        Location spawnPoint = world.getSpawnLocation();
-        Location alignedSpawnPoint = new Location(world, spawnPoint.getX() + 0.5, spawnPoint.getY(), spawnPoint.getZ() + 0.5);
-        player.teleport(alignedSpawnPoint);
+        globalTeamManager.removePlayerFromTeam(player);
+
+        player.teleport(location);
     }
 }

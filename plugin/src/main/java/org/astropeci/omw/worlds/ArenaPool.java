@@ -1,14 +1,19 @@
 package org.astropeci.omw.worlds;
 
+import lombok.RequiredArgsConstructor;
 import org.astropeci.omw.commands.NamedArena;
+import org.astropeci.omw.game.Arena;
 import org.bukkit.Bukkit;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 public class ArenaPool implements AutoCloseable {
 
-    private Map<String, Arena> arenas = new HashMap<>();
+    private final Template template;
+
+    private final Map<String, Arena> arenas = new HashMap<>();
 
     public Arena create(String name) throws ArenaAlreadyExistsException {
         if (arenas.containsKey(name)) {
@@ -17,7 +22,7 @@ public class ArenaPool implements AutoCloseable {
         }
 
         Bukkit.getLogger().info("Creating arena " + name);
-        Arena arena = Arena.create();
+        Arena arena = template.createArena();
         arenas.put(name, arena);
 
         return arena;
@@ -38,7 +43,7 @@ public class ArenaPool implements AutoCloseable {
         return Optional.ofNullable(arenas.get(name));
     }
 
-    public Set<NamedArena> allArenas() {
+    public Set<NamedArena> getAllArenas() {
         return arenas.entrySet().stream()
                 .map(entry -> new NamedArena(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toSet());

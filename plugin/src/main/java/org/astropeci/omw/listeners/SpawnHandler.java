@@ -1,5 +1,6 @@
 package org.astropeci.omw.listeners;
 
+import lombok.RequiredArgsConstructor;
 import org.astropeci.omw.worlds.Hub;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -8,11 +9,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
+@RequiredArgsConstructor
 public class SpawnHandler implements Listener {
+
+    private final Hub hub;
 
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
-        Hub.sendPlayer(e.getPlayer());
+        hub.sendPlayer(e.getPlayer());
     }
 
     @EventHandler
