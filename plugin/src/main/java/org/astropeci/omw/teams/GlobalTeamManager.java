@@ -1,10 +1,12 @@
-package org.astropeci.omw.game;
+package org.astropeci.omw.teams;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
+
+import java.util.Optional;
 
 public class GlobalTeamManager {
 
@@ -43,8 +45,16 @@ public class GlobalTeamManager {
         return getTeam(team).hasEntry(player.getName());
     }
 
-    public boolean doesPlayerHaveTeam(Player player) {
-        return scoreboard.getEntryTeam(player.getName()) != null;
+    public Optional<GameTeam> getPlayerTeam(Player player) {
+        Team team = scoreboard.getEntryTeam(player.getName());
+
+        if (green.equals(team)) {
+            return Optional.of(GameTeam.GREEN);
+        } else if (red.equals(team)) {
+            return Optional.of(GameTeam.RED);
+        } else {
+            return Optional.empty();
+        }
     }
 
     public boolean addPlayerToTeam(Player player, GameTeam team) {

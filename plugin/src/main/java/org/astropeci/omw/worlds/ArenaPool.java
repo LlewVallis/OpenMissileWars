@@ -2,8 +2,8 @@ package org.astropeci.omw.worlds;
 
 import lombok.RequiredArgsConstructor;
 import org.astropeci.omw.commands.NamedArena;
-import org.astropeci.omw.game.Arena;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -37,6 +37,16 @@ public class ArenaPool implements AutoCloseable {
             Bukkit.getLogger().info("Deleting arena " + name);
             arena.close();
         }
+    }
+
+    public Optional<NamedArena> getPlayerArena(Player player) {
+        for (NamedArena arena : getAllArenas()) {
+            if (arena.arena.hasPlayer(player)) {
+                return Optional.of(arena);
+            }
+        }
+
+        return Optional.empty();
     }
 
     public Optional<Arena> get(String name) {

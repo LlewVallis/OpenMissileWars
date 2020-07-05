@@ -1,5 +1,6 @@
 package org.astropeci.omw.structures;
 
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -12,6 +13,7 @@ import java.util.logging.Level;
 
 public class Structure {
 
+    @Getter
     private final String name;
 
     /* package-private */ static final String AUTHOR = "openmissilewars";
@@ -171,9 +173,5 @@ public class Structure {
         }
 
         return serverVersionCache;
-    }
-
-    public String getName() {
-        return name;
     }
 }

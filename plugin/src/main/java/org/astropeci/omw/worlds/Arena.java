@@ -1,11 +1,9 @@
-package org.astropeci.omw.game;
+package org.astropeci.omw.worlds;
 
 import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.astropeci.omw.FileUtil;
-import org.astropeci.omw.worlds.Hub;
-import org.astropeci.omw.worlds.WorldManager;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -23,6 +21,10 @@ public class Arena implements AutoCloseable {
 
     public void sendPlayerToSpawn(Player player) {
         worldManager.send(player, world);
+    }
+
+    public boolean hasPlayer(Player player) {
+        return world.getPlayers().contains(player);
     }
 
     @Override

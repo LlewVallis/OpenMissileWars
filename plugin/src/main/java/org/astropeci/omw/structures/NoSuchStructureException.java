@@ -1,7 +1,10 @@
 package org.astropeci.omw.structures;
 
+import lombok.Getter;
+
 public class NoSuchStructureException extends Exception {
 
+    @Getter
     public String name;
 
     public NoSuchStructureException(String name) {
@@ -22,9 +25,5 @@ public class NoSuchStructureException extends Exception {
     public NoSuchStructureException(String name, Throwable cause) {
         super(cause);
         this.name = name;
-    }
-
-    public String getName() {
-        return name;
     }
 }

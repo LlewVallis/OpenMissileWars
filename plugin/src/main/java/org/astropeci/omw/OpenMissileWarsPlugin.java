@@ -1,10 +1,8 @@
 package org.astropeci.omw;
 
 import org.astropeci.omw.commands.*;
-import org.astropeci.omw.game.GlobalTeamManager;
-import org.astropeci.omw.listeners.NightVisionHandler;
-import org.astropeci.omw.listeners.SpawnHandler;
-import org.astropeci.omw.listeners.WelcomeHandler;
+import org.astropeci.omw.teams.GlobalTeamManager;
+import org.astropeci.omw.listeners.*;
 import org.astropeci.omw.structures.StructurePool;
 import org.astropeci.omw.worlds.ArenaPool;
 import org.astropeci.omw.worlds.Hub;
@@ -57,6 +55,8 @@ public class OpenMissileWarsPlugin extends JavaPlugin {
 
         registerEventHandler(new SpawnHandler(hub));
         registerEventHandler(new WelcomeHandler());
+        registerEventHandler(new ChatTransformer(globalTeamManager, arenaPool));
+        registerEventHandler(new HungerDisabler());
         registerEventHandler(nightVisionHandler);
     }
 

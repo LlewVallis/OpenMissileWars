@@ -2,7 +2,7 @@ package org.astropeci.omw.worlds;
 
 import lombok.RequiredArgsConstructor;
 import org.astropeci.omw.FileUtil;
-import org.astropeci.omw.game.GlobalTeamManager;
+import org.astropeci.omw.teams.GlobalTeamManager;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
@@ -77,6 +77,7 @@ public class WorldManager {
         player.setLevel(0);
         player.setFallDistance(0);
         player.setVelocity(new Vector());
+        player.setHealth(20);
 
         globalTeamManager.removePlayerFromTeam(player);
 

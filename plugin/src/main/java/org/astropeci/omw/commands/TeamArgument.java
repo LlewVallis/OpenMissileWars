@@ -4,7 +4,7 @@ import org.astropeci.omw.commandbuilder.ArgumentParseException;
 import org.astropeci.omw.commandbuilder.ArgumentParser;
 import org.astropeci.omw.commandbuilder.CommandContext;
 import org.astropeci.omw.commandbuilder.arguments.StringSetArgument;
-import org.astropeci.omw.game.GameTeam;
+import org.astropeci.omw.teams.GameTeam;
 
 import java.util.List;
 import java.util.Set;

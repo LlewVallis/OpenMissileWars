@@ -1,4 +1,4 @@
-package org.astropeci.omw.game;
+package org.astropeci.omw.teams;
 
 public enum GameTeam {
 

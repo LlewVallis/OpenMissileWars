@@ -1,7 +1,7 @@
 package org.astropeci.omw.commands;
 
 import lombok.Value;
-import org.astropeci.omw.game.Arena;
+import org.astropeci.omw.worlds.Arena;
 
 @Value
 public class NamedArena {

@@ -1,7 +1,6 @@
 package org.astropeci.omw.worlds;
 
 import lombok.RequiredArgsConstructor;
-import org.astropeci.omw.game.Arena;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 

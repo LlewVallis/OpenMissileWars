@@ -1,7 +1,10 @@
 package org.astropeci.omw.worlds;
 
+import lombok.Getter;
+
 public class NoSuchArenaException extends Exception {
 
+    @Getter
     private final String name;
 
     public NoSuchArenaException(String name) {
@@ -22,9 +25,5 @@ public class NoSuchArenaException extends Exception {
     public NoSuchArenaException(String name, Throwable cause) {
         super(cause);
         this.name = name;
-    }
-
-    public String getName() {
-        return name;
     }
 }
