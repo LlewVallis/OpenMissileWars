@@ -35,6 +35,7 @@ public class OpenMissileWarsPlugin extends JavaPlugin {
 
         Hub hub = new Hub(worldManager);
         Template template = new Template(worldManager, hub);
+        template.createWorldIfMissing();
 
         arenaPool = new ArenaPool(template);
         structureManager = new StructureManager(worldManager);

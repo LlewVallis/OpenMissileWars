@@ -64,6 +64,8 @@ public class StructureManager implements AutoCloseable {
 
         nbtSerializer.toStream(structureNbt, Files.newOutputStream(destFile, StandardOpenOption.CREATE_NEW));
 
+        cachedTransformations.put(cacheKey, newStructureName);
+
         return newStructureName;
     }
 
@@ -131,10 +133,12 @@ public class StructureManager implements AutoCloseable {
     public void close() {
         Path transformedDirectory = getStructureDirectory(Structure.TRANSFORMED_AUTHOR);
 
-        try {
-            FileUtil.deleteRecursive(transformedDirectory);
-        } catch (IOException e) {
-            Bukkit.getLogger().log(Level.WARNING, "Failed to clean transformed structures", e);
+        if (Files.isDirectory(transformedDirectory)) {
+            try {
+                FileUtil.deleteRecursive(transformedDirectory);
+            } catch (IOException e) {
+                Bukkit.getLogger().log(Level.WARNING, "Failed to clean transformed structures", e);
+            }
         }
     }
 }

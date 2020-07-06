@@ -28,13 +28,15 @@ public class Template {
 
     public Arena createArena() {
         String worldName = "omw-arena-" + UUID.randomUUID();
-        Bukkit.getLogger().info("Creating arena under directory " + worldName);
+        Bukkit.getLogger().info("Creating arena " + worldName);
 
         World templateWorld = getWorld();
         Path source = templateWorld.getWorldFolder().toPath().resolve("region");
 
         Path worldContainer = Bukkit.getWorldContainer().toPath();
         Path dest = worldContainer.resolve(worldName).resolve("region");
+
+        Bukkit.getLogger().info("Copying template files to " + worldName);
 
         try {
             Files.walkFileTree(source, new SimpleFileVisitor<>() {
@@ -53,9 +55,14 @@ public class Template {
         WorldCreator creator = new WorldCreator(worldName);
         creator.copy(templateWorld);
         creator.generatorSettings(GENERATOR_SETTINGS);
+        creator.generateStructures(false);
+
+        Bukkit.getLogger().info("Loading " + worldName);
 
         World world = creator.createWorld();
         worldManager.configureWorld(world);
+
+        Bukkit.getLogger().info("Completed creating arena " + worldName);
 
         return new Arena(world, worldManager, hub);
     }
@@ -67,9 +74,11 @@ public class Template {
             Bukkit.getLogger().info("No template world found, generating one");
 
             WorldCreator creator = new WorldCreator(TEMPLATE_WORLD_NAME);
+
             creator.type(WorldType.FLAT);
             creator.generatorSettings(GENERATOR_SETTINGS);
             creator.generateStructures(false);
+
             World newWorld = creator.createWorld();
             worldManager.configureWorld(newWorld);
 
@@ -77,5 +86,9 @@ public class Template {
         } else {
             return world;
         }
+    }
+
+    public void createWorldIfMissing() {
+        getWorld();
     }
 }

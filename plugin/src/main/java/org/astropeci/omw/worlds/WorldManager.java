@@ -22,9 +22,9 @@ public class WorldManager {
     }
 
     public void configureWorld(World world) {
-        world.setKeepSpawnInMemory(false);
         world.setDifficulty(Difficulty.EASY);
         world.setSpawnLocation(0, 64, 0);
+        world.setKeepSpawnInMemory(false);
 
         world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
         world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
@@ -63,7 +63,7 @@ public class WorldManager {
 
     public void send(Player player, World world) {
         Location spawnPoint = world.getSpawnLocation();
-        Location alignedSpawnPoint = new Location(world, spawnPoint.getX() + 0.5, spawnPoint.getY(), spawnPoint.getZ() + 0.5);
+        Location alignedSpawnPoint = new Location(world, spawnPoint.getX() + 0.5, spawnPoint.getY(), spawnPoint.getZ() + 0.5, -90, 0);
 
         send(player, alignedSpawnPoint);
     }
