@@ -1,13 +1,12 @@
 package org.astropeci.omw;
 
+import lombok.SneakyThrows;
 import org.astropeci.omw.commands.*;
+import org.astropeci.omw.teams.GameTeam;
 import org.astropeci.omw.teams.GlobalTeamManager;
 import org.astropeci.omw.listeners.*;
 import org.astropeci.omw.structures.StructureManager;
-import org.astropeci.omw.worlds.ArenaPool;
-import org.astropeci.omw.worlds.Hub;
-import org.astropeci.omw.worlds.Template;
-import org.astropeci.omw.worlds.WorldManager;
+import org.astropeci.omw.worlds.*;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.annotation.plugin.ApiVersion;
@@ -27,21 +26,24 @@ public class OpenMissileWarsPlugin extends JavaPlugin {
     private StructureManager structureManager;
 
     @Override
+    @SneakyThrows({ ArenaAlreadyExistsException.class })
     public void onEnable() {
         GlobalTeamManager globalTeamManager = new GlobalTeamManager();
         globalTeamManager.configScoreboard();
 
         WorldManager worldManager = new WorldManager(globalTeamManager);
+        worldManager.configureWorld(worldManager.getDefaultWorld());
+        worldManager.cleanArenas();
 
         Hub hub = new Hub(worldManager);
+
         Template template = new Template(worldManager, hub);
         template.createWorldIfMissing();
 
         arenaPool = new ArenaPool(template);
-        structureManager = new StructureManager(worldManager);
+        arenaPool.create("mw1");
 
-        worldManager.configureWorld(worldManager.getDefaultWorld());
-        worldManager.cleanArenas();
+        structureManager = new StructureManager(worldManager);
 
         NightVisionHandler nightVisionHandler = new NightVisionHandler();
 
@@ -53,9 +55,12 @@ public class OpenMissileWarsPlugin extends JavaPlugin {
         new DeleteArenaCommand(arenaPool).register(this);
         new LoadStructureCommand(structureManager).register(this);
         new NightVisionCommand(nightVisionHandler).register(this);
-        new JoinTeamCommand(globalTeamManager).register(this);
+        new SpectateCommand(arenaPool).register(this);
 
-        registerEventHandler(new SpawnHandler(hub));
+        new JoinTeamCommand(GameTeam.GREEN, globalTeamManager, arenaPool, worldManager).register(this);
+        new JoinTeamCommand(GameTeam.RED, globalTeamManager, arenaPool, worldManager).register(this);
+
+        registerEventHandler(new SpawnHandler(hub, arenaPool, globalTeamManager));
         registerEventHandler(new WelcomeHandler());
         registerEventHandler(new ChatTransformer(globalTeamManager, arenaPool));
         registerEventHandler(new HungerDisabler());

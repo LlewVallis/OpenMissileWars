@@ -73,7 +73,6 @@ public class WorldManager {
         player.setGameMode(GameMode.ADVENTURE);
         player.setFlying(false);
         player.setExp(0);
-        player.setBedSpawnLocation(null);
         player.setLevel(0);
         player.setFallDistance(0);
         player.setVelocity(new Vector());

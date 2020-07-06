@@ -35,7 +35,7 @@ public class ArenaCommand {
     @PlayerOnlyCommand
     @ExecuteCommand
     public boolean execute(CommandContext ctx, NamedArena arena) {
-        arena.arena.sendPlayerToSpawn((Player) ctx.sender);
+        arena.arena.sendPlayerToLobby((Player) ctx.sender);
 
         TextComponent message = new TextComponent("Sending you to " + arena.name);
         message.setColor(ChatColor.GREEN);

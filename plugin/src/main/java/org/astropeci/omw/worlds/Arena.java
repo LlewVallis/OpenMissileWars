@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.astropeci.omw.FileUtil;
+import org.astropeci.omw.teams.GameTeam;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
@@ -19,12 +21,12 @@ public class Arena implements AutoCloseable {
     private final WorldManager worldManager;
     private final Hub hub;
 
-    public void sendPlayerToSpawn(Player player) {
+    public void sendPlayerToLobby(Player player) {
         worldManager.send(player, world);
     }
 
     public boolean hasPlayer(Player player) {
-        return world.getPlayers().contains(player);
+        return player.getWorld().equals(world);
     }
 
     @Override
@@ -55,6 +57,17 @@ public class Arena implements AutoCloseable {
             }
         } else {
             Bukkit.getLogger().warning("Could not clean world files for " + world.getName() + " as they did not exist");
+        }
+    }
+
+    public Location getSpawn(GameTeam team) {
+        switch (team) {
+            case GREEN:
+                return new Location(world, 123.5, 76, 65.5, 180, 0);
+            case RED:
+                return new Location(world, 123.5, 76, -64.5, 0, 0);
+            default:
+                throw new IllegalStateException();
         }
     }
 }
