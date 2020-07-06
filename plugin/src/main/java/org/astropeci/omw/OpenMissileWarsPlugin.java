@@ -3,7 +3,7 @@ package org.astropeci.omw;
 import org.astropeci.omw.commands.*;
 import org.astropeci.omw.teams.GlobalTeamManager;
 import org.astropeci.omw.listeners.*;
-import org.astropeci.omw.structures.StructurePool;
+import org.astropeci.omw.structures.StructureManager;
 import org.astropeci.omw.worlds.ArenaPool;
 import org.astropeci.omw.worlds.Hub;
 import org.astropeci.omw.worlds.Template;
@@ -24,6 +24,7 @@ import org.bukkit.plugin.java.annotation.plugin.author.Author;
 public class OpenMissileWarsPlugin extends JavaPlugin {
 
     private ArenaPool arenaPool;
+    private StructureManager structureManager;
 
     @Override
     public void onEnable() {
@@ -36,7 +37,7 @@ public class OpenMissileWarsPlugin extends JavaPlugin {
         Template template = new Template(worldManager, hub);
 
         arenaPool = new ArenaPool(template);
-        StructurePool structurePool = new StructurePool(worldManager);
+        structureManager = new StructureManager(worldManager);
 
         worldManager.configureWorld(worldManager.getDefaultWorld());
         worldManager.cleanArenas();
@@ -49,7 +50,7 @@ public class OpenMissileWarsPlugin extends JavaPlugin {
         new ListArenasCommand(arenaPool).register(this);
         new CreateArenaCommand(arenaPool).register(this);
         new DeleteArenaCommand(arenaPool).register(this);
-        new LoadStructureCommand(structurePool).register(this);
+        new LoadStructureCommand(structureManager).register(this);
         new NightVisionCommand(nightVisionHandler).register(this);
         new JoinTeamCommand(globalTeamManager).register(this);
 
@@ -57,6 +58,7 @@ public class OpenMissileWarsPlugin extends JavaPlugin {
         registerEventHandler(new WelcomeHandler());
         registerEventHandler(new ChatTransformer(globalTeamManager, arenaPool));
         registerEventHandler(new HungerDisabler());
+        registerEventHandler(new ItemDeployHandler(arenaPool, structureManager, globalTeamManager));
         registerEventHandler(nightVisionHandler);
     }
 
@@ -67,5 +69,6 @@ public class OpenMissileWarsPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         arenaPool.close();
+        structureManager.close();
     }
 }

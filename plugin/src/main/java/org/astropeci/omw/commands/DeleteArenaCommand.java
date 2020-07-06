@@ -1,5 +1,6 @@
 package org.astropeci.omw.commands;
 
+import lombok.SneakyThrows;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.astropeci.omw.commandbuilder.CommandBuilder;
@@ -38,16 +39,13 @@ public class DeleteArenaCommand {
     }
 
     @ExecuteCommand
+    @SneakyThrows({ NoSuchArenaException.class })
     public boolean execute(CommandContext ctx, NamedArena arena) {
-        try {
-            arenaPool.delete(arena.name);
+        arenaPool.delete(arena.name);
 
-            TextComponent message = new TextComponent("Deleted " + arena.name);
-            message.setColor(ChatColor.GREEN);
-            ctx.sender.spigot().sendMessage(message);
-        } catch (NoSuchArenaException e) {
-            throw new RuntimeException(e);
-        }
+        TextComponent message = new TextComponent("Deleted " + arena.name);
+        message.setColor(ChatColor.GREEN);
+        ctx.sender.spigot().sendMessage(message);
 
         return true;
     }

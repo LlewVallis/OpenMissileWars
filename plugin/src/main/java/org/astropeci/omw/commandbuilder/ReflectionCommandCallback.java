@@ -1,5 +1,6 @@
 package org.astropeci.omw.commandbuilder;
 
+import lombok.SneakyThrows;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -49,6 +50,7 @@ public class ReflectionCommandCallback implements CommandCallback {
         return true;
     }
 
+    @SneakyThrows({ IllegalAccessException.class })
     private boolean runCallback(Method callbackMethod, List<Object> argumentValues,
                                        List<Object> variadicArgumentValues, CommandContext context) {
         if (callbackMethod.isAnnotationPresent(PlayerOnlyCommand.class) && !(context.sender instanceof Player)) {
@@ -66,8 +68,6 @@ public class ReflectionCommandCallback implements CommandCallback {
         } catch (InvocationTargetException e) {
             Bukkit.getLogger().log(Level.SEVERE, "Unhandled exception in command callback for " + context.command, e.getCause());
             throw new ReflectionCommandCallbackException("unhandled exception in callback method ", e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
         }
     }
 

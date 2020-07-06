@@ -9,7 +9,8 @@ import org.astropeci.omw.commandbuilder.ReflectionCommandCallback;
 import org.astropeci.omw.commandbuilder.arguments.CoordArgument;
 import org.astropeci.omw.commandbuilder.arguments.StringSetArgument;
 import org.astropeci.omw.structures.Structure;
-import org.astropeci.omw.structures.StructurePool;
+import org.astropeci.omw.structures.StructureManager;
+import org.astropeci.omw.teams.GameTeam;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.BlockCommandSender;
@@ -25,13 +26,14 @@ public class LoadStructureCommand {
 
     private final TabExecutor executor;
 
-    public LoadStructureCommand(StructurePool structurePool) {
+    public LoadStructureCommand(StructureManager structureManager) {
         executor = new CommandBuilder()
-                .addArgument(new StructureArgument(structurePool))
+                .addArgument(new StructureArgument(structureManager))
                 .addArgument(new CoordArgument(CoordArgument.Axis.X))
                 .addArgument(new CoordArgument(CoordArgument.Axis.Y))
                 .addArgument(new CoordArgument(CoordArgument.Axis.Z))
                 .addArgument(new StringSetArgument("south", "west", "north", "east").optional())
+                .addArgument(new TeamArgument().optional())
                 .build(new ReflectionCommandCallback(this));
     }
 
@@ -40,14 +42,14 @@ public class LoadStructureCommand {
                 plugin,
                 "structure-load",
                 "Loads an OpenMissileWars structure",
-                "structure-load <name> <x> <y> <z> [direction]",
+                "structure-load <name> <x> <y> <z> [direction] [team]",
                 "omw.structure.load",
                 executor
         );
     }
 
     @ExecuteCommand
-    public boolean execute(CommandContext ctx, Structure structure, int x, int y, int z, String direction) {
+    public boolean execute(CommandContext ctx, Structure structure, int x, int y, int z, String direction, GameTeam team) {
         Optional<World> worldOptional = getSenderWorld(ctx.sender);
 
         if (worldOptional.isEmpty()) {
@@ -60,6 +62,10 @@ public class LoadStructureCommand {
 
         if (direction == null) {
             direction = inferDirection(ctx.sender);
+        }
+
+        if (team == null) {
+            team = GameTeam.GREEN;
         }
 
         Structure.Rotation rotation = null;
@@ -79,7 +85,7 @@ public class LoadStructureCommand {
         }
 
         Location location = new Location(worldOptional.get(), x, y, z);
-        boolean success = structure.load(location, rotation);
+        boolean success = structure.load(location, team, rotation);
 
         TextComponent message;
         if (success) {

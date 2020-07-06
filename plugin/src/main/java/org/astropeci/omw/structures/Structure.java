@@ -1,6 +1,7 @@
 package org.astropeci.omw.structures;
 
 import lombok.Getter;
+import org.astropeci.omw.teams.GameTeam;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -16,15 +17,20 @@ public class Structure {
     @Getter
     private final String name;
 
-    /* package-private */ static final String AUTHOR = "openmissilewars";
+    private final StructureManager structureManager;
+
+    /* package-private */ static final String SOURCE_AUTHOR = "openmissilewars";
+    /* package-private */ static final String TRANSFORMED_AUTHOR = "openmissilewars-transformed";
+
     private static String serverVersionCache = null;
 
-    public Structure(String name, StructurePool structurePool) throws NoSuchStructureException {
-        if (!structurePool.getAllStructureNames().contains(name)) {
+    public Structure(String name, StructureManager structureManager) throws NoSuchStructureException {
+        if (!structureManager.getAllStructureNames().contains(name)) {
             throw new NoSuchStructureException(name, name + " does not exist");
         }
 
         this.name = name;
+        this.structureManager = structureManager;
     }
 
     public enum Rotation {
@@ -34,9 +40,17 @@ public class Structure {
         ROTATE_270,
     }
 
-    public boolean load(Location location, Rotation rotation) {
+    public boolean load(Location location, GameTeam team, Rotation rotation) {
+        String structureName;
         try {
-            loadThrowing(location, rotation);
+            structureName = structureManager.getOrCreateTransformedStructure(name, team);
+        } catch (Exception e) {
+            Bukkit.getLogger().log(Level.WARNING, "Exception transforming structure, check your Paper/OMW version", e);
+            return false;
+        }
+
+        try {
+            loadUnsafe(location, structureName, rotation);
             return true;
         } catch (Exception e) {
             Bukkit.getLogger().log(Level.WARNING, "Exception cloning structure, check your Paper/OMW version", e);
@@ -44,24 +58,36 @@ public class Structure {
         }
     }
 
-    private void loadThrowing(Location target, Rotation rotation) throws ClassNotFoundException, InvocationTargetException, IllegalAccessException, NoSuchMethodException, NoSuchFieldException, InstantiationException {
-        Bukkit.getLogger().fine("Attempting to spawn structure " + name + " at " + target);
+    private void loadUnsafe(Location target, String structureName, Rotation rotation) throws ClassNotFoundException, InvocationTargetException, IllegalAccessException, NoSuchMethodException, NoSuchFieldException, InstantiationException {
+        Bukkit.getLogger().fine("Attempting to spawn structure " + structureName + " at " + target);
 
         if (isClientSide(target.getWorld())) {
             return;
         }
 
-        delegateLoad(target, rotation);
+        delegateLoad(target, structureName, rotation);
     }
 
-    private void delegateLoad(Location target, Rotation rotation) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    /*
+     * Here comes NMS reflection blood magic...
+     */
+
+    private Class<?> fetchClass(String nameTemplate) throws ClassNotFoundException {
+        String name = nameTemplate.replace("$OBC", "org.bukkit.craftbukkit.$VER")
+                .replace("$NMS", "net.minecraft.server.$VER")
+                .replace("$VER", getServerVersion());
+
+        return Class.forName(name);
+    }
+
+    private void delegateLoad(Location target, String structureName, Rotation rotation) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         Class<?> c_definedStructureInfo = fetchClass("$NMS.DefinedStructureInfo");
         Class<?> c_blockPosition = fetchClass("$NMS.BlockPosition");
         Class<?> c_generatorAccess = fetchClass("$NMS.GeneratorAccess");
         Class<?> c_definedStructure = fetchClass("$NMS.DefinedStructure");
 
         Object targetBlockPosition = getTargetBlockPosition(target);
-        Object definedStructure = getDefinedStructure();
+        Object definedStructure = getDefinedStructure(structureName);
         Object definedStructureInfo = getDefinedStructureInfo(rotation);
         Object targetWorld = getNmsWorld(target.getWorld());
 
@@ -81,7 +107,7 @@ public class Structure {
         return c_craftWorld.getDeclaredMethod("getHandle").invoke(world);
     }
 
-    private Object getDefinedStructure() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    private Object getDefinedStructure(String structureName) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         Class<?> c_minecraftKey = fetchClass("$NMS.MinecraftKey");
         Class<?> c_worldServer = fetchClass("$NMS.WorldServer");
         Class<?> c_definedStructureManager = fetchClass("$NMS.DefinedStructureManager");
@@ -89,7 +115,7 @@ public class Structure {
         Object nmsSourceWorlds = getNmsWorld(Bukkit.getWorld("world"));
         Object structureManager = c_worldServer.getDeclaredMethod("r_").invoke(nmsSourceWorlds);
 
-        Object minecraftKey = c_minecraftKey.getDeclaredConstructor(String.class, String.class).newInstance(AUTHOR, name);
+        Object minecraftKey = c_minecraftKey.getDeclaredConstructor(String.class, String.class).newInstance(TRANSFORMED_AUTHOR, structureName);
 
         Method m_definedStructureManager_a = c_definedStructureManager.getDeclaredMethod("a", c_minecraftKey);
         return m_definedStructureManager_a.invoke(structureManager, minecraftKey);
@@ -156,14 +182,6 @@ public class Structure {
         @SuppressWarnings("unchecked")
         Object blockRotation = Enum.valueOf((Class) c_enumBlockRotation, rotationValueName);
         return blockRotation;
-    }
-
-    private Class<?> fetchClass(String nameTemplate) throws ClassNotFoundException {
-        String name = nameTemplate.replace("$OBC", "org.bukkit.craftbukkit.$VER")
-                .replace("$NMS", "net.minecraft.server.$VER")
-                .replace("$VER", getServerVersion());
-
-        return Class.forName(name);
     }
 
     private String getServerVersion() {

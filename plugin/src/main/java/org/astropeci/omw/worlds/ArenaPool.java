@@ -1,6 +1,7 @@
 package org.astropeci.omw.worlds;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.astropeci.omw.commands.NamedArena;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -60,16 +61,13 @@ public class ArenaPool implements AutoCloseable {
     }
 
     @Override
+    @SneakyThrows({ NoSuchArenaException.class })
     public void close() {
         // Avoid modification during iteration
         Set<String> arenaNames = new HashSet<>(arenas.keySet());
 
         for (String name : arenaNames) {
-            try {
-                delete(name);
-            } catch (NoSuchArenaException e) {
-                throw new RuntimeException(e);
-            }
+            delete(name);
         }
     }
 }
