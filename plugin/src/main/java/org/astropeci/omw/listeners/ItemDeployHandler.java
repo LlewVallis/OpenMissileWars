@@ -113,5 +113,7 @@ public class ItemDeployHandler implements Listener {
                 inventory.setItemInOffHand(new ItemStack(Material.AIR));
             }
         }
+
+        e.setCancelled(true);
     }
 }
