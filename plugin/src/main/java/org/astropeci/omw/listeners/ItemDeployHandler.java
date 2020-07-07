@@ -8,12 +8,16 @@ import org.astropeci.omw.structures.StructureManager;
 import org.astropeci.omw.teams.GameTeam;
 import org.astropeci.omw.teams.GlobalTeamManager;
 import org.astropeci.omw.worlds.ArenaPool;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
 import java.util.Optional;
 
@@ -99,5 +103,15 @@ public class ItemDeployHandler implements Listener {
         target.setZ(target.getZ() + (team == GameTeam.GREEN ? -1 : 1) * offsetZ);
 
         structure.load(target, team, rotation);
+
+        if (player.getGameMode() == GameMode.SURVIVAL) {
+            PlayerInventory inventory = player.getInventory();
+
+            inventory.remove(e.getMaterial());
+
+            if (inventory.getItemInOffHand().getType() == e.getMaterial()) {
+                inventory.setItemInOffHand(new ItemStack(Material.AIR));
+            }
+        }
     }
 }

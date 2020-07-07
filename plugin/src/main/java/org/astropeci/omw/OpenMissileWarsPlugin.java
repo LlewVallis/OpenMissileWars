@@ -2,6 +2,7 @@ package org.astropeci.omw;
 
 import lombok.SneakyThrows;
 import org.astropeci.omw.commands.*;
+import org.astropeci.omw.item.EquipmentProvider;
 import org.astropeci.omw.teams.GameTeam;
 import org.astropeci.omw.teams.GlobalTeamManager;
 import org.astropeci.omw.listeners.*;
@@ -37,13 +38,15 @@ public class OpenMissileWarsPlugin extends JavaPlugin {
 
         Hub hub = new Hub(worldManager);
 
-        Template template = new Template(worldManager, hub);
+        Template template = new Template(globalTeamManager, worldManager, hub, this);
         template.createWorldIfMissing();
 
         arenaPool = new ArenaPool(template);
         arenaPool.create("mw1");
 
         structureManager = new StructureManager(worldManager);
+
+        EquipmentProvider equipmentProvider = new EquipmentProvider();
 
         NightVisionHandler nightVisionHandler = new NightVisionHandler();
 
@@ -57,14 +60,15 @@ public class OpenMissileWarsPlugin extends JavaPlugin {
         new NightVisionCommand(nightVisionHandler).register(this);
         new SpectateCommand(arenaPool).register(this);
 
-        new JoinTeamCommand(GameTeam.GREEN, globalTeamManager, arenaPool, worldManager).register(this);
-        new JoinTeamCommand(GameTeam.RED, globalTeamManager, arenaPool, worldManager).register(this);
+        new JoinTeamCommand(GameTeam.GREEN, globalTeamManager, arenaPool, worldManager, equipmentProvider).register(this);
+        new JoinTeamCommand(GameTeam.RED, globalTeamManager, arenaPool, worldManager, equipmentProvider).register(this);
 
         registerEventHandler(new SpawnHandler(hub, arenaPool, globalTeamManager));
         registerEventHandler(new WelcomeHandler());
         registerEventHandler(new ChatTransformer(globalTeamManager, arenaPool));
         registerEventHandler(new HungerDisabler());
         registerEventHandler(new ItemDeployHandler(arenaPool, structureManager, globalTeamManager));
+        registerEventHandler(new ItemDropPreventer());
         registerEventHandler(nightVisionHandler);
     }
 

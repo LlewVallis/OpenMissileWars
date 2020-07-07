@@ -1,8 +1,10 @@
 package org.astropeci.omw.worlds;
 
 import lombok.RequiredArgsConstructor;
+import org.astropeci.omw.teams.GlobalTeamManager;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
@@ -19,8 +21,10 @@ public class Template {
     private static final String TEMPLATE_WORLD_NAME = "template";
     private static final String GENERATOR_SETTINGS = "{\"layers\":[],\"biome\":\"minecraft:plains\",\"structures\":{\"stronghold\":{\"distance\":0,\"spread\":0,\"count\":0},\"structures\":{}}}";
 
+    private final GlobalTeamManager globalTeamManager;
     private final WorldManager worldManager;
     private final Hub hub;
+    private final Plugin plugin;
 
     public void sendPlayer(Player player) {
         worldManager.send(player, getWorld());
@@ -64,7 +68,7 @@ public class Template {
 
         Bukkit.getLogger().info("Completed creating arena " + worldName);
 
-        return new Arena(world, worldManager, hub);
+        return new Arena(world, globalTeamManager, worldManager, hub, plugin);
     }
 
     private World getWorld() {

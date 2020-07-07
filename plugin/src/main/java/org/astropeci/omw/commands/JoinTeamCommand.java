@@ -3,6 +3,7 @@ package org.astropeci.omw.commands;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.astropeci.omw.commandbuilder.*;
+import org.astropeci.omw.item.EquipmentProvider;
 import org.astropeci.omw.teams.GameTeam;
 import org.astropeci.omw.teams.GlobalTeamManager;
 import org.astropeci.omw.worlds.ArenaPool;
@@ -21,16 +22,18 @@ public class JoinTeamCommand {
     private final GlobalTeamManager globalTeamManager;
     private final ArenaPool arenaPool;
     private final WorldManager worldManager;
+    private final EquipmentProvider equipmentProvider;
 
     private final TabExecutor executor;
 
-    public JoinTeamCommand(GameTeam team, GlobalTeamManager globalTeamManager, ArenaPool arenaPool, WorldManager worldManager) {
+    public JoinTeamCommand(GameTeam team, GlobalTeamManager globalTeamManager, ArenaPool arenaPool, WorldManager worldManager, EquipmentProvider equipmentProvider) {
         executor = new CommandBuilder().build(new ReflectionCommandCallback(this));
 
         this.team = team;
         this.globalTeamManager = globalTeamManager;
         this.arenaPool = arenaPool;
         this.worldManager = worldManager;
+        this.equipmentProvider = equipmentProvider;
     }
 
     public void register(Plugin plugin) {
@@ -69,6 +72,7 @@ public class JoinTeamCommand {
             globalTeamManager.addPlayerToTeam(player, team);
 
             player.setGameMode(GameMode.SURVIVAL);
+            equipmentProvider.giveToPlayer(player, team);
         }
 
         TextComponent message;

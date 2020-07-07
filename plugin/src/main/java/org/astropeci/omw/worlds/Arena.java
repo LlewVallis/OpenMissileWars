@@ -4,22 +4,36 @@ import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.astropeci.omw.FileUtil;
+import org.astropeci.omw.item.PeriodicItemDispenser;
 import org.astropeci.omw.teams.GameTeam;
+import org.astropeci.omw.teams.GlobalTeamManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 
-@RequiredArgsConstructor
 public class Arena implements AutoCloseable {
 
     private final World world;
     private final WorldManager worldManager;
     private final Hub hub;
+
+    private final PeriodicItemDispenser dispenser;
+
+    public Arena(World world, GlobalTeamManager globalTeamManager, WorldManager worldManager, Hub hub, Plugin plugin) {
+        dispenser = new PeriodicItemDispenser(world, globalTeamManager, plugin);
+
+        this.world = world;
+        this.worldManager = worldManager;
+        this.hub = hub;
+
+        dispenser.start();
+    }
 
     public void sendPlayerToLobby(Player player) {
         worldManager.send(player, world);
@@ -31,6 +45,8 @@ public class Arena implements AutoCloseable {
 
     @Override
     public void close() {
+        dispenser.close();
+
         for (Player player : world.getPlayers()) {
             TextComponent message = new TextComponent("Closing arena");
             message.setColor(ChatColor.GREEN);
