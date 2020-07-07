@@ -63,9 +63,9 @@ public class Arena implements AutoCloseable {
     public Location getSpawn(GameTeam team) {
         switch (team) {
             case GREEN:
-                return new Location(world, 123.5, 76, 65.5, 180, 0);
+                return new Location(world, 123.5, 77, 65.5, 180, 0);
             case RED:
-                return new Location(world, 123.5, 76, -64.5, 0, 0);
+                return new Location(world, 123.5, 77, -64.5, 0, 0);
             default:
                 throw new IllegalStateException();
         }

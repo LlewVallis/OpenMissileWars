@@ -26,9 +26,9 @@ public class SpectateCommand {
     public void register(Plugin plugin) {
         CommandBuilder.registerCommand(
                 plugin,
-                "spectate",
+                "sp",
                 "Spectate a game in an arena",
-                "spectate",
+                "sp",
                 "omw.spectate",
                 executor
         );

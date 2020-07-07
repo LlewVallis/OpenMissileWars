@@ -121,6 +121,10 @@ public class LoadStructureCommand {
         if (sender instanceof Entity) {
             float yaw = ((Entity) sender).getLocation().getYaw();
 
+            while (yaw < 0) {
+                yaw += 360;
+            }
+
             if (yaw < 45) {
                 return "south";
             } else if (yaw < 135) {

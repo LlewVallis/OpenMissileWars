@@ -48,22 +48,43 @@ public class ItemDeployHandler implements Listener {
                 Structure.Rotation.ROTATE_180 :
                 Structure.Rotation.ROTATE_0;
 
+
         String structureName;
+
+        int offsetX;
+        int offsetY;
+        int offsetZ;
+
         switch (e.getMaterial()) {
             case CREEPER_SPAWN_EGG:
                 structureName = "tomahawk";
+                offsetX = 0;
+                offsetY = 4;
+                offsetZ = 4;
                 break;
             case GUARDIAN_SPAWN_EGG:
                 structureName = "guardian";
+                offsetX = 1;
+                offsetY = 4;
+                offsetZ = 4;
                 break;
             case GHAST_SPAWN_EGG:
                 structureName = "juggernaut";
+                offsetX = 1;
+                offsetY = 4;
+                offsetZ = 4;
                 break;
             case WITCH_SPAWN_EGG:
                 structureName = "shieldbuster";
+                offsetX = 1;
+                offsetY = 4;
+                offsetZ = 4;
                 break;
             case OCELOT_SPAWN_EGG:
                 structureName = "lightning";
+                offsetX = 1;
+                offsetY = 4;
+                offsetZ = 5;
                 break;
             default:
                 return;
@@ -72,6 +93,11 @@ public class ItemDeployHandler implements Listener {
         Structure structure = new Structure(structureName, structureManager);
 
         Location target = e.getClickedBlock().getLocation();
+
+        target.setX(target.getX() + (team == GameTeam.GREEN ? 1 : -1) * offsetX);
+        target.setY(target.getY() - offsetY);
+        target.setZ(target.getZ() + (team == GameTeam.GREEN ? -1 : 1) * offsetZ);
+
         structure.load(target, team, rotation);
     }
 }
