@@ -59,6 +59,7 @@ public class OpenMissileWarsPlugin extends JavaPlugin {
         new LoadStructureCommand(structureManager).register(this);
         new NightVisionCommand(nightVisionHandler).register(this);
         new SpectateCommand(arenaPool).register(this);
+        new PingCommand().register(this);
 
         new JoinTeamCommand(GameTeam.GREEN, globalTeamManager, arenaPool, worldManager, equipmentProvider).register(this);
         new JoinTeamCommand(GameTeam.RED, globalTeamManager, arenaPool, worldManager, equipmentProvider).register(this);
