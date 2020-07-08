@@ -1,6 +1,6 @@
 #!/bin/sh
 for dir in */; do
-  pushd $dir > /dev/null
+  cd $dir
 
   ARTIFACT_URL=`cat url`
   CACHED_ARTIFACT_URL=`cat url-cached 2> /dev/null`
@@ -15,5 +15,5 @@ for dir in */; do
     curl --output bin "$ARTIFACT_URL" && echo "$ARTIFACT_URL" > url-cached
   fi
 
-  popd > /dev/null
+  cd ..
 done
