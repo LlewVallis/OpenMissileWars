@@ -1,4 +1,6 @@
 save-player-data: false
+allow-perm-block-break-exploits: true
+allow-piston-duplication: true
 world-settings:
   default:
     optimize-explosions: true

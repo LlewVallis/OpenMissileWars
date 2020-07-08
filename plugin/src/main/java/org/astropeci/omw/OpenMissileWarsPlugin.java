@@ -3,10 +3,10 @@ package org.astropeci.omw;
 import lombok.SneakyThrows;
 import org.astropeci.omw.commands.*;
 import org.astropeci.omw.item.EquipmentProvider;
-import org.astropeci.omw.teams.GameTeam;
-import org.astropeci.omw.teams.GlobalTeamManager;
 import org.astropeci.omw.listeners.*;
 import org.astropeci.omw.structures.StructureManager;
+import org.astropeci.omw.teams.GameTeam;
+import org.astropeci.omw.teams.GlobalTeamManager;
 import org.astropeci.omw.worlds.*;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -73,6 +73,7 @@ public class OpenMissileWarsPlugin extends JavaPlugin {
         registerEventHandler(new FireballHandler());
         registerEventHandler(new ShieldHandler(structureManager, globalTeamManager, this));
         registerEventHandler(new PortalBreakListener(arenaPool, this));
+        registerEventHandler(new ExplosionModifier());
         registerEventHandler(nightVisionHandler);
     }
 
