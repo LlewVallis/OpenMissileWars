@@ -24,12 +24,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.Optional;
-import java.util.logging.Level;
-
-import static org.astropeci.omw.ReflectionUtil.fetchClass;
 
 @RequiredArgsConstructor
 public class ItemDeployHandler implements Listener {
@@ -61,7 +56,7 @@ public class ItemDeployHandler implements Listener {
         GameTeam team = teamOptional.get();
         Location target = e.getClickedBlock().getLocation();
 
-        boolean success = deployStructure(e.getMaterial(), team, target.clone(), player) ||
+        boolean success = deployStructure(team, target.clone(), e) ||
                 deployFireball(e.getMaterial(), target.clone());
 
         if (success) {
@@ -80,7 +75,10 @@ public class ItemDeployHandler implements Listener {
     }
 
     @SneakyThrows({ NoSuchStructureException.class })
-    private boolean deployStructure(Material material, GameTeam team, Location target, Player player) {
+    private boolean deployStructure(GameTeam team, Location target, PlayerInteractEvent e) {
+        Material material = e.getMaterial();
+        Player player = e.getPlayer();
+
         Structure.Rotation rotation = team == GameTeam.GREEN ?
                 Structure.Rotation.ROTATE_180 :
                 Structure.Rotation.ROTATE_0;
@@ -162,7 +160,9 @@ public class ItemDeployHandler implements Listener {
             message.setColor(ChatColor.RED);
             player.spigot().sendMessage(message);
 
-            return true;
+            // Cancel without succeeding
+            e.setCancelled(true);
+            return false;
         }
 
         Structure structure = new Structure(structureName, structureManager);

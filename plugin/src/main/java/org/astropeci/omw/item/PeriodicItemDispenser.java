@@ -44,29 +44,46 @@ public class PeriodicItemDispenser implements AutoCloseable {
     private boolean shouldRun = true;
 
     public void start() {
+        if (shouldStart()) {
+            TextComponent message = new TextComponent("Game is starting in 10 seconds");
+            message.setColor(ChatColor.GREEN);
+            world.getPlayers().forEach(player -> player.sendMessage(message));
+
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                TextComponent titleMessage;
+
+                boolean shouldStart = shouldStart();
+                if (shouldStart) {
+                    titleMessage = new TextComponent("Game is starting");
+                    titleMessage.setColor(ChatColor.GREEN);
+                } else {
+                    titleMessage = new TextComponent("Not enough players to start");
+                    titleMessage.setColor(ChatColor.RED);
+                }
+
+                Title title = new Title(titleMessage, null, 5, 40, 20);
+
+                world.getPlayers().forEach(player -> player.sendTitle(title));
+
+                if (shouldStart) {
+                    giveItemsPeriodically();
+                } else {
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, this::start, 1);
+                }
+            }, 20 * 10);
+        } else {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, this::start, 1);
+        }
+    }
+
+    private boolean shouldStart() {
         long occupiedTeams = world.getPlayers().stream()
                 .filter(player -> player.getGameMode() == GameMode.SURVIVAL)
                 .flatMap(player -> globalTeamManager.getPlayerTeam(player).stream())
                 .distinct()
                 .count();
 
-        if (occupiedTeams == 1) {
-            TextComponent message = new TextComponent("Game is starting in 10 seconds");
-            message.setColor(ChatColor.GREEN);
-            world.getPlayers().forEach(player -> player.sendMessage(message));
-
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-                TextComponent titleMessage = new TextComponent("Game is starting");
-                titleMessage.setColor(ChatColor.GREEN);
-                Title title = new Title(titleMessage, null, 5, 40, 20);
-
-                world.getPlayers().forEach(player -> player.sendTitle(title));
-
-                giveItemsPeriodically();
-            }, 20 * 10);
-        } else {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, this::start, 1);
-        }
+        return occupiedTeams >= 1;
     }
 
     private void giveItemsPeriodically() {

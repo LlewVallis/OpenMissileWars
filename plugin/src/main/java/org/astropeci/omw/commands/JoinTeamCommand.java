@@ -7,6 +7,7 @@ import org.astropeci.omw.item.EquipmentProvider;
 import org.astropeci.omw.teams.GameTeam;
 import org.astropeci.omw.teams.GlobalTeamManager;
 import org.astropeci.omw.worlds.ArenaPool;
+import org.astropeci.omw.worlds.NamedArena;
 import org.astropeci.omw.worlds.WorldManager;
 import org.bukkit.GameMode;
 import org.bukkit.Location;

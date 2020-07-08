@@ -9,7 +9,10 @@ import org.astropeci.omw.teams.GameTeam;
 import org.astropeci.omw.teams.GlobalTeamManager;
 import org.astropeci.omw.worlds.*;
 import org.bukkit.event.Listener;
+import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.java.annotation.permission.Permission;
+import org.bukkit.plugin.java.annotation.permission.Permissions;
 import org.bukkit.plugin.java.annotation.plugin.ApiVersion;
 import org.bukkit.plugin.java.annotation.plugin.Description;
 import org.bukkit.plugin.java.annotation.plugin.Plugin;
@@ -21,6 +24,17 @@ import org.bukkit.plugin.java.annotation.plugin.author.Author;
 @ApiVersion(ApiVersion.Target.v1_15)
 @Author("Llew Vallis <llewvallis@gmail.com>")
 @Website("https://github.com/LlewVallis/OpenMissileWars")
+@Permissions({
+        @Permission(name = "omw.arena.join", defaultValue = PermissionDefault.TRUE),
+        @Permission(name = "omw.github", defaultValue = PermissionDefault.TRUE),
+        @Permission(name = "omw.hub.join", defaultValue = PermissionDefault.TRUE),
+        @Permission(name = "omw.issue", defaultValue = PermissionDefault.TRUE),
+        @Permission(name = "omw.team.join", defaultValue = PermissionDefault.TRUE),
+        @Permission(name = "omw.arena.list", defaultValue = PermissionDefault.TRUE),
+        @Permission(name = "omw.nightvis", defaultValue = PermissionDefault.TRUE),
+        @Permission(name = "omw.ping", defaultValue = PermissionDefault.TRUE),
+        @Permission(name = "omw.spectate", defaultValue = PermissionDefault.TRUE),
+})
 public class OpenMissileWarsPlugin extends JavaPlugin {
 
     private ArenaPool arenaPool;
@@ -60,6 +74,8 @@ public class OpenMissileWarsPlugin extends JavaPlugin {
         new NightVisionCommand(nightVisionHandler).register(this);
         new SpectateCommand(arenaPool).register(this);
         new PingCommand().register(this);
+        new GithubCommand().register(this);
+        new IssueCommand().register(this);
 
         new JoinTeamCommand(GameTeam.GREEN, globalTeamManager, arenaPool, worldManager, equipmentProvider).register(this);
         new JoinTeamCommand(GameTeam.RED, globalTeamManager, arenaPool, worldManager, equipmentProvider).register(this);

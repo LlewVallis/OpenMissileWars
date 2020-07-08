@@ -5,6 +5,7 @@ import org.astropeci.omw.commandbuilder.ArgumentParser;
 import org.astropeci.omw.commandbuilder.CommandContext;
 import org.astropeci.omw.worlds.Arena;
 import org.astropeci.omw.worlds.ArenaPool;
+import org.astropeci.omw.worlds.NamedArena;
 
 import java.util.List;
 import java.util.Set;

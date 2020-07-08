@@ -1,7 +1,7 @@
 package org.astropeci.omw.listeners;
 
 import lombok.RequiredArgsConstructor;
-import org.astropeci.omw.commands.NamedArena;
+import org.astropeci.omw.worlds.NamedArena;
 import org.astropeci.omw.teams.GameTeam;
 import org.astropeci.omw.worlds.ArenaPool;
 import org.astropeci.omw.worlds.NoSuchArenaException;

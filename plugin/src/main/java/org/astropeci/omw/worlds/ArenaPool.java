@@ -2,7 +2,6 @@ package org.astropeci.omw.worlds;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.astropeci.omw.commands.NamedArena;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -67,8 +66,15 @@ public class ArenaPool implements AutoCloseable {
 
     @SneakyThrows({ ArenaAlreadyExistsException.class })
     public void resetArena(String name) throws NoSuchArenaException {
+        String tempName = "temp-" + UUID.randomUUID().toString();
+
+        get(name).orElseThrow(() -> new NoSuchArenaException(name, name + " does not exist"));
+
+        Arena newArena = create(tempName);
         delete(name);
-        create(name);
+
+        arenas.remove(tempName);
+        arenas.put(name, newArena);
     }
 
     @Override

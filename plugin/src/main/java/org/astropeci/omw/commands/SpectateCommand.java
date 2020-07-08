@@ -4,6 +4,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.astropeci.omw.commandbuilder.*;
 import org.astropeci.omw.worlds.ArenaPool;
+import org.astropeci.omw.worlds.NamedArena;
 import org.bukkit.GameMode;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;

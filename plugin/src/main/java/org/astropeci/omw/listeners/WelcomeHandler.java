@@ -1,6 +1,5 @@
 package org.astropeci.omw.listeners;
 
-import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -26,7 +25,7 @@ public class WelcomeHandler implements Listener {
 
         TextComponent welcomeToOpenMwMessage = new TextComponent(welcomeToComponent, openComponent, mwComponent);
 
-        TextComponent githubMessage = new TextComponent("Click here to browse the code or file an issue");
+        TextComponent githubMessage = new TextComponent("Click here for our GitHub page");
         githubMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://github.com/LlewVallis/OpenMissileWars"));
         githubMessage.setColor(ChatColor.BLUE);
         githubMessage.setItalic(true);
