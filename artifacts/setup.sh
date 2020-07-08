@@ -5,7 +5,7 @@ for dir in */; do
   ARTIFACT_URL=`cat url`
   CACHED_ARTIFACT_URL=`cat url-cached 2> /dev/null`
 
-  if [ ! "$ARTIFACT_URL" == "$CACHED_ARTIFACT_URL" ]; then
+  if [ ! "$ARTIFACT_URL" = "$CACHED_ARTIFACT_URL" ]; then
     if [ ! -z "$CACHED_ARTIFACT_URL" ]; then
       echo Cache busted for "$ARTIFACT_URL", downloading
     else
