@@ -2,6 +2,8 @@ package org.astropeci.omw.listeners;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.astropeci.omw.structures.NoSuchStructureException;
 import org.astropeci.omw.structures.Structure;
 import org.astropeci.omw.structures.StructureManager;
@@ -59,7 +61,7 @@ public class ItemDeployHandler implements Listener {
         GameTeam team = teamOptional.get();
         Location target = e.getClickedBlock().getLocation();
 
-        boolean success = deployStructure(e.getMaterial(), team, target.clone()) ||
+        boolean success = deployStructure(e.getMaterial(), team, target.clone(), player) ||
                 deployFireball(e.getMaterial(), target.clone());
 
         if (success) {
@@ -78,7 +80,7 @@ public class ItemDeployHandler implements Listener {
     }
 
     @SneakyThrows({ NoSuchStructureException.class })
-    private boolean deployStructure(Material material, GameTeam team, Location target) {
+    private boolean deployStructure(Material material, GameTeam team, Location target, Player player) {
         Structure.Rotation rotation = team == GameTeam.GREEN ?
                 Structure.Rotation.ROTATE_180 :
                 Structure.Rotation.ROTATE_0;
@@ -89,39 +91,78 @@ public class ItemDeployHandler implements Listener {
         int offsetY;
         int offsetZ;
 
+        int max;
+        int min;
+
         switch (material) {
             case CREEPER_SPAWN_EGG:
                 structureName = "tomahawk";
+
                 offsetX = 0;
                 offsetY = 4;
                 offsetZ = 4;
+
+                max = 55;
+                min = 55;
                 break;
             case GUARDIAN_SPAWN_EGG:
                 structureName = "guardian";
+
                 offsetX = 1;
                 offsetY = 4;
                 offsetZ = 4;
+
+                max = 60;
+                min = 54;
                 break;
             case GHAST_SPAWN_EGG:
                 structureName = "juggernaut";
+
                 offsetX = 1;
                 offsetY = 4;
                 offsetZ = 4;
+
+                max = 57;
+                min = 54;
                 break;
             case WITCH_SPAWN_EGG:
                 structureName = "shieldbuster";
+
                 offsetX = 1;
                 offsetY = 4;
                 offsetZ = 4;
+
+                max = 53;
+                min = 54;
                 break;
             case OCELOT_SPAWN_EGG:
                 structureName = "lightning";
+
                 offsetX = 1;
                 offsetY = 4;
                 offsetZ = 5;
+
+                max = 58;
+                min = 55;
                 break;
             default:
                 return false;
+        }
+
+        if (team == GameTeam.GREEN) {
+            int oldMin = min;
+            min = max * -1;
+            max = oldMin;
+        } else {
+            min *= -1;
+        }
+
+        if (target.getZ() < min || target.getZ() > max) {
+            TextComponent message = new TextComponent("You cannot place a " + structureName + " there");
+            message.setColor(ChatColor.RED);
+            player.spigot().sendMessage(message);
+
+            return true;
         }
 
         Structure structure = new Structure(structureName, structureManager);
