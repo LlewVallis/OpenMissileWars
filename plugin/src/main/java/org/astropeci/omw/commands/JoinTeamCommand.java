@@ -75,12 +75,14 @@ public class JoinTeamCommand {
             equipmentProvider.giveToPlayer(player, team);
         }
 
+        String teamName = team == GameTeam.GREEN ? "green" : "red";
+
         TextComponent message;
         if (changed) {
-            message = new TextComponent("Joined " + team + " team");
+            message = new TextComponent("Joined " + teamName + " team");
             message.setColor(ChatColor.GREEN);
         } else {
-            message = new TextComponent("You were already on " + team + " team");
+            message = new TextComponent("You were already on " + teamName + " team");
             message.setColor(ChatColor.RED);
         }
 

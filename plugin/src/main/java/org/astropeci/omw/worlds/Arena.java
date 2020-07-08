@@ -1,6 +1,6 @@
 package org.astropeci.omw.worlds;
 
-import lombok.RequiredArgsConstructor;
+import com.destroystokyo.paper.Title;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.astropeci.omw.FileUtil;
@@ -8,6 +8,7 @@ import org.astropeci.omw.item.PeriodicItemDispenser;
 import org.astropeci.omw.teams.GameTeam;
 import org.astropeci.omw.teams.GlobalTeamManager;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -25,6 +26,8 @@ public class Arena implements AutoCloseable {
 
     private final PeriodicItemDispenser dispenser;
 
+    private boolean ended = false;
+
     public Arena(World world, GlobalTeamManager globalTeamManager, WorldManager worldManager, Hub hub, Plugin plugin) {
         dispenser = new PeriodicItemDispenser(world, globalTeamManager, plugin);
 
@@ -39,8 +42,8 @@ public class Arena implements AutoCloseable {
         worldManager.send(player, world);
     }
 
-    public boolean hasPlayer(Player player) {
-        return player.getWorld().equals(world);
+    public boolean isAttachedToWorld(World world) {
+        return world.equals(this.world);
     }
 
     @Override
@@ -85,5 +88,26 @@ public class Arena implements AutoCloseable {
             default:
                 throw new IllegalStateException();
         }
+    }
+
+    public boolean processWinner(GameTeam team) {
+        if (ended) {
+            return false;
+        }
+
+        String teamName = team == GameTeam.GREEN ? "Green" : "Red";
+        ChatColor color = team == GameTeam.GREEN ? ChatColor.GREEN : ChatColor.RED;
+
+        TextComponent titleMessage = new TextComponent(teamName + " wins the game");
+        titleMessage.setColor(color);
+        Title title = new Title(titleMessage, null, 5, 80, 40);
+
+        world.getPlayers().forEach(player -> {
+            player.sendTitle(title);
+            player.setGameMode(GameMode.SPECTATOR);
+        });
+
+        ended = true;
+        return true;
     }
 }

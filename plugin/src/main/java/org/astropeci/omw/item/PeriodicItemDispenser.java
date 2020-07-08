@@ -1,8 +1,8 @@
 package org.astropeci.omw.item;
 
+import com.destroystokyo.paper.Title;
 import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.astropeci.omw.teams.GlobalTeamManager;
 import org.bukkit.Bukkit;
@@ -10,9 +10,9 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
@@ -31,13 +31,13 @@ public class PeriodicItemDispenser implements AutoCloseable {
     private final Plugin plugin;
 
     private final Set<ItemStack> items = Set.of(
-            new ItemStack(Material.CREEPER_SPAWN_EGG),
-            new ItemStack(Material.GHAST_SPAWN_EGG),
-            new ItemStack(Material.WITCH_SPAWN_EGG),
-            new ItemStack(Material.OCELOT_SPAWN_EGG),
-            new ItemStack(Material.GUARDIAN_SPAWN_EGG),
-            new ItemStack(Material.BLAZE_SPAWN_EGG),
-            new ItemStack(Material.SNOWBALL),
+            simpleItem(Material.CREEPER_SPAWN_EGG, "Tomahawk"),
+            simpleItem(Material.GHAST_SPAWN_EGG, "Juggernaut"),
+            simpleItem(Material.WITCH_SPAWN_EGG, "Shieldbuster"),
+            simpleItem(Material.OCELOT_SPAWN_EGG, "Lightning"),
+            simpleItem(Material.GUARDIAN_SPAWN_EGG, "Guardian"),
+            simpleItem(Material.BLAZE_SPAWN_EGG, "Fireball"),
+            simpleItem(Material.SNOWBALL, "Shield"),
             new ItemStack(Material.ARROW, 3)
     );
 
@@ -55,7 +55,15 @@ public class PeriodicItemDispenser implements AutoCloseable {
             message.setColor(ChatColor.GREEN);
             world.getPlayers().forEach(player -> player.sendMessage(message));
 
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, this::giveItemsPeriodically, 20 * 10);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                TextComponent titleMessage = new TextComponent("Game is starting");
+                titleMessage.setColor(ChatColor.GREEN);
+                Title title = new Title(titleMessage, null, 5, 40, 20);
+
+                world.getPlayers().forEach(player -> player.sendTitle(title));
+
+                giveItemsPeriodically();
+            }, 20 * 10);
         } else {
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, this::start, 1);
         }
@@ -86,6 +94,16 @@ public class PeriodicItemDispenser implements AutoCloseable {
         }
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, this::giveItemsPeriodically, ITEM_DROP_DELAY);
+    }
+
+    private ItemStack simpleItem(Material material, String name) {
+        ItemStack stack = new ItemStack(material);
+
+        ItemMeta meta = stack.getItemMeta();
+        meta.setDisplayName(ChatColor.RESET + name);
+        stack.setItemMeta(meta);
+
+        return stack;
     }
 
     @Override

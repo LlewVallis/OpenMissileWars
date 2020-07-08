@@ -12,6 +12,8 @@ import java.lang.reflect.Method;
 import java.util.Random;
 import java.util.logging.Level;
 
+import static org.astropeci.omw.ReflectionUtil.fetchClass;
+
 public class Structure {
 
     @Getter
@@ -71,14 +73,6 @@ public class Structure {
     /*
      * Here comes NMS reflection blood magic...
      */
-
-    private Class<?> fetchClass(String nameTemplate) throws ClassNotFoundException {
-        String name = nameTemplate.replace("$OBC", "org.bukkit.craftbukkit.$VER")
-                .replace("$NMS", "net.minecraft.server.$VER")
-                .replace("$VER", getServerVersion());
-
-        return Class.forName(name);
-    }
 
     private void delegateLoad(Location target, String structureName, Rotation rotation) throws ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         Class<?> c_definedStructureInfo = fetchClass("$NMS.DefinedStructureInfo");
@@ -182,14 +176,5 @@ public class Structure {
         @SuppressWarnings("unchecked")
         Object blockRotation = Enum.valueOf((Class) c_enumBlockRotation, rotationValueName);
         return blockRotation;
-    }
-
-    private String getServerVersion() {
-        if (serverVersionCache == null) {
-            serverVersionCache = Bukkit.getServer().getClass().getPackageName().split("\\.")[3];
-            Bukkit.getLogger().info("Detected server version as " + serverVersionCache);
-        }
-
-        return serverVersionCache;
     }
 }

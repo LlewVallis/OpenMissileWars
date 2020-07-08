@@ -1,6 +1,7 @@
 package org.astropeci.omw.item;
 
 import org.astropeci.omw.teams.GameTeam;
+import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -34,7 +35,7 @@ public class EquipmentProvider {
         ItemStack bow = new ItemStack(Material.BOW);
 
         ItemMeta bowMeta = bow.getItemMeta();
-        bowMeta.setDisplayName("GunBlade");
+        bowMeta.setDisplayName(ChatColor.RESET + "GunBlade");
         bow.setItemMeta(bowMeta);
 
         bow.addUnsafeEnchantment(Enchantment.ARROW_FIRE, 1);

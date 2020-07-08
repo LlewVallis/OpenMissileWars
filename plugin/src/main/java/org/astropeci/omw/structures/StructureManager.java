@@ -72,7 +72,8 @@ public class StructureManager implements AutoCloseable {
     private void transformStructureNbt(NamedTag structureNbt, GameTeam team) {
         Map<String, String> blockRewrites = Map.of(
                 "minecraft:terracotta", team == GameTeam.GREEN ? "minecraft:green_terracotta" : "minecraft:red_terracotta",
-                "minecraft:glass", team == GameTeam.GREEN ? "minecraft:green_stained_glass" : "minecraft:red_stained_glass"
+                "minecraft:glass", team == GameTeam.GREEN ? "minecraft:green_stained_glass" : "minecraft:red_stained_glass",
+                "minecraft:ice", team == GameTeam.GREEN ? "minecraft:lime_stained_glass" : "minecraft:pink_stained_glass"
         );
 
         CompoundTag root = (CompoundTag) structureNbt.getTag();

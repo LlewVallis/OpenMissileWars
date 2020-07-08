@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.astropeci.omw.commands.NamedArena;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -41,8 +42,12 @@ public class ArenaPool implements AutoCloseable {
     }
 
     public Optional<NamedArena> getPlayerArena(Player player) {
+        return getArenaForWorld(player.getWorld());
+    }
+
+    public Optional<NamedArena> getArenaForWorld(World world) {
         for (NamedArena arena : getAllArenas()) {
-            if (arena.arena.hasPlayer(player)) {
+            if (arena.arena.isAttachedToWorld(world)) {
                 return Optional.of(arena);
             }
         }
@@ -58,6 +63,12 @@ public class ArenaPool implements AutoCloseable {
         return arenas.entrySet().stream()
                 .map(entry -> new NamedArena(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toSet());
+    }
+
+    @SneakyThrows({ ArenaAlreadyExistsException.class })
+    public void resetArena(String name) throws NoSuchArenaException {
+        delete(name);
+        create(name);
     }
 
     @Override

@@ -68,8 +68,11 @@ public class OpenMissileWarsPlugin extends JavaPlugin {
         registerEventHandler(new WelcomeHandler());
         registerEventHandler(new ChatTransformer(globalTeamManager, arenaPool));
         registerEventHandler(new HungerDisabler());
-        registerEventHandler(new ItemDeployHandler(arenaPool, structureManager, globalTeamManager));
+        registerEventHandler(new ItemDeployHandler(arenaPool, structureManager, globalTeamManager, this));
         registerEventHandler(new ItemDropPreventer());
+        registerEventHandler(new FireballHandler());
+        registerEventHandler(new ShieldHandler(structureManager, globalTeamManager, this));
+        registerEventHandler(new PortalBreakListener(arenaPool, this));
         registerEventHandler(nightVisionHandler);
     }
 
