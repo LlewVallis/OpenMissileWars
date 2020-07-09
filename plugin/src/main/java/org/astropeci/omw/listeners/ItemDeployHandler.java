@@ -61,12 +61,23 @@ public class ItemDeployHandler implements Listener {
 
         if (success) {
             if (player.getGameMode() == GameMode.SURVIVAL) {
+                Material material = e.getMaterial();
                 PlayerInventory inventory = player.getInventory();
 
-                inventory.remove(e.getMaterial());
-
-                if (inventory.getItemInOffHand().getType() == e.getMaterial()) {
-                    inventory.setItemInOffHand(new ItemStack(Material.AIR));
+                if (inventory.getItemInMainHand().getType() == material) {
+                    int amount = inventory.getItemInMainHand().getAmount();
+                    if (amount == 1) {
+                        inventory.setItemInMainHand(new ItemStack(Material.AIR));
+                    } else {
+                        inventory.setItemInMainHand(new ItemStack(material, amount - 1));
+                    }
+                } else {
+                    int amount = inventory.getItemInOffHand().getAmount();
+                    if (amount == 1) {
+                        inventory.setItemInOffHand(new ItemStack(Material.AIR));
+                    } else {
+                        inventory.setItemInOffHand(new ItemStack(material, amount - 1));
+                    }
                 }
             }
 
