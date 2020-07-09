@@ -24,7 +24,9 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 @RequiredArgsConstructor
 public class ItemDeployHandler implements Listener {
@@ -100,8 +102,9 @@ public class ItemDeployHandler implements Listener {
         int offsetY;
         int offsetZ;
 
-        int max;
-        int min;
+        int width;
+        int height;
+        int length;
 
         switch (material) {
             case CREEPER_SPAWN_EGG:
@@ -111,8 +114,9 @@ public class ItemDeployHandler implements Listener {
                 offsetY = 4;
                 offsetZ = 4;
 
-                max = 55;
-                min = 55;
+                width = 2;
+                height = 2;
+                length = 13;
                 break;
             case GUARDIAN_SPAWN_EGG:
                 structureName = "guardian";
@@ -121,8 +125,9 @@ public class ItemDeployHandler implements Listener {
                 offsetY = 4;
                 offsetZ = 4;
 
-                max = 60;
-                min = 54;
+                width = 3;
+                height = 3;
+                length = 8;
                 break;
             case GHAST_SPAWN_EGG:
                 structureName = "juggernaut";
@@ -131,8 +136,9 @@ public class ItemDeployHandler implements Listener {
                 offsetY = 4;
                 offsetZ = 4;
 
-                max = 57;
-                min = 54;
+                width = 3;
+                height = 3;
+                length = 11;
                 break;
             case WITCH_SPAWN_EGG:
                 structureName = "shieldbuster";
@@ -141,8 +147,9 @@ public class ItemDeployHandler implements Listener {
                 offsetY = 4;
                 offsetZ = 4;
 
-                max = 53;
-                min = 54;
+                width = 3;
+                height = 3;
+                length = 15;
                 break;
             case OCELOT_SPAWN_EGG:
                 structureName = "lightning";
@@ -151,22 +158,21 @@ public class ItemDeployHandler implements Listener {
                 offsetY = 4;
                 offsetZ = 5;
 
-                max = 58;
-                min = 55;
+                width = 3;
+                height = 2;
+                length = 9;
                 break;
             default:
                 return false;
         }
 
-        if (team == GameTeam.GREEN) {
-            int oldMin = min;
-            min = max * -1;
-            max = oldMin;
-        } else {
-            min *= -1;
-        }
+        target.setX(target.getX() + (team == GameTeam.GREEN ? 1 : -1) * offsetX);
+        target.setY(target.getY() - offsetY);
+        target.setZ(target.getZ() + (team == GameTeam.GREEN ? -1 : 1) * offsetZ);
 
-        if (target.getZ() < min || target.getZ() > max) {
+        boolean canSpawn = canSpawn(team, target, width, height, length);
+
+        if (!canSpawn) {
             TextComponent message = new TextComponent("You cannot place a " + structureName + " there");
             message.setColor(ChatColor.RED);
             player.spigot().sendMessage(message);
@@ -177,14 +183,64 @@ public class ItemDeployHandler implements Listener {
         }
 
         Structure structure = new Structure(structureName, structureManager);
-
-        target.setX(target.getX() + (team == GameTeam.GREEN ? 1 : -1) * offsetX);
-        target.setY(target.getY() - offsetY);
-        target.setZ(target.getZ() + (team == GameTeam.GREEN ? -1 : 1) * offsetZ);
-
         structure.load(target, team, rotation);
 
         return true;
+    }
+
+    private boolean canSpawn(GameTeam team, Location location, int width, int height, int length) {
+        World world = location.getWorld();
+
+        int teamDirectionMultiplier = team == GameTeam.GREEN ? -1 : 1;
+
+        int startX = location.getBlockX();
+        int startY = location.getBlockY();
+        int startZ = location.getBlockZ();
+
+        Set<Material> friendlyBlocks = Set.of(
+                team == GameTeam.GREEN ? Material.GREEN_STAINED_GLASS : Material.RED_STAINED_GLASS,
+                team == GameTeam.GREEN ? Material.LIME_STAINED_GLASS : Material.PINK_STAINED_GLASS
+        );
+
+        Set<Material> enemyBlocks = Set.of(
+                team == GameTeam.GREEN ? Material.RED_STAINED_GLASS : Material.GREEN_STAINED_GLASS,
+                team == GameTeam.GREEN ? Material.PINK_STAINED_GLASS : Material.LIME_STAINED_GLASS
+        );
+
+        int overriddenFriendlyBlocks = 0;
+
+        for (int x = startX; x != startX + width * teamDirectionMultiplier; x += teamDirectionMultiplier) {
+            for (int y = startY; y < startY + height; y++) {
+                for (int z = startZ; z != startZ + length * teamDirectionMultiplier; z += teamDirectionMultiplier) {
+                    Material block = world.getBlockAt(x, y, z).getType();
+
+                    if (block == Material.OBSIDIAN || block == Material.NETHER_PORTAL) {
+                        return false;
+                    }
+
+                    if (friendlyBlocks.contains(block)) {
+                        overriddenFriendlyBlocks++;
+                    }
+
+                    boolean onFriendlySide;
+                    if (team == GameTeam.GREEN) {
+                        onFriendlySide = z >= 0;
+                    } else {
+                        onFriendlySide = z <= 0;
+                    }
+
+                    if (enemyBlocks.contains(block) && !onFriendlySide) {
+                        overriddenFriendlyBlocks--;
+                    }
+
+                    if (block == Material.WHITE_STAINED_GLASS && onFriendlySide) {
+                        overriddenFriendlyBlocks++;
+                    }
+                }
+            }
+        }
+
+        return overriddenFriendlyBlocks < 5;
     }
 
     private boolean deployFireball(Material material, Location target) {
