@@ -4,6 +4,8 @@ stats:
   disable-saving: true
 world-settings:
   default:
+    entity-tracking-range:
+      player: 256
     verbose: false
 advancements:
   disable-saving: true
