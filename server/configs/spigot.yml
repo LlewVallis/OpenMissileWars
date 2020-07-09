@@ -6,8 +6,6 @@ world-settings:
   default:
     entity-tracking-range:
       players: 256
-      animals: 48
-      monsters: 48
       misc: 256
       other: 256
     verbose: false
