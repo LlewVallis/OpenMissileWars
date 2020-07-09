@@ -1,1 +1,4 @@
-aliases: {}
+aliases:
+  stop: help
+  restart: help
+  reload: help
