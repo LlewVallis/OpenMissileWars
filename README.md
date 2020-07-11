@@ -11,7 +11,20 @@ I've already installed OpenMissileWars on a public server which you can join wit
 Your ping should be roughly the same as it is on Cubekrowd, since it uses the same host.
 If you'd like to be OP on the server (for example for creative mode testing), ask `Llew Vallis#5734` on Discord.
 
-## Run your own copy
+## Run a prebuilt server
+
+### Prerequisites
+
+ * Java (versions 11+ are recommended, but older versions may also work)
+
+### Running
+
+ 1. Download the latest prebuilt server release form https://github.com/LlewVallis/OpenMissileWars/releases.
+ 2. Extract the archive, and navigate into the extracted directory.
+ 3. If you wish to accept Mojang's EULA (https://account.mojang.com/documents/minecraft_eula), create a file named `eula.txt` containing `eula=true`.
+ 4. Run the `paper.jar` file using a command such as `java -jar paper.jar` or otherwise.
+
+## Compile and run from source
 
 ### Prerequisites
 
