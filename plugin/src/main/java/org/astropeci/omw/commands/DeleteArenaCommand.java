@@ -15,8 +15,8 @@ import org.bukkit.plugin.Plugin;
 
 public class DeleteArenaCommand {
 
-    private ArenaPool arenaPool;
-    private TabExecutor executor;
+    private final ArenaPool arenaPool;
+    private final TabExecutor executor;
 
     public DeleteArenaCommand(ArenaPool arenaPool) {
         this.arenaPool = arenaPool;

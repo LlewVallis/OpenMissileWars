@@ -82,7 +82,6 @@ public class ReflectionCommandCallback implements CommandCallback {
 
         if (variadic) {
             Class<?>[] parameterTypes = callbackMethod.getParameterTypes();
-            @SuppressWarnings("unchecked")
             Class<? extends Object[]> variadicType = (Class<? extends Object[]>) parameterTypes[parameterTypes.length - 1];
 
             Object[] untypedVariadicArguments = variadicArgumentValues.toArray();

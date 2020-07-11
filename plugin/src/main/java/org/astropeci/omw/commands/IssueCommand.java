@@ -4,7 +4,6 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.astropeci.omw.commandbuilder.*;
-import org.astropeci.omw.worlds.Hub;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.plugin.Plugin;
 

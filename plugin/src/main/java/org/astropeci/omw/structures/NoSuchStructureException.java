@@ -5,7 +5,7 @@ import lombok.Getter;
 public class NoSuchStructureException extends Exception {
 
     @Getter
-    public String name;
+    public final String name;
 
     public NoSuchStructureException(String name) {
         super();

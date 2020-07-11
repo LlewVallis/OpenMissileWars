@@ -12,8 +12,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
-import java.util.Optional;
-
 @RequiredArgsConstructor
 public class SpawnHandler implements Listener {
 

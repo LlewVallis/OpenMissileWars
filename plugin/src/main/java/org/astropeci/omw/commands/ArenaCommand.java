@@ -11,12 +11,9 @@ import org.bukkit.plugin.Plugin;
 
 public class ArenaCommand {
 
-    private final ArenaPool arenaPool;
     private final TabExecutor executor;
 
     public ArenaCommand(ArenaPool arenaPool) {
-        this.arenaPool = arenaPool;
-
         executor = new CommandBuilder()
                 .addArgument(new ArenaArgument(arenaPool))
                 .build(new ReflectionCommandCallback(this));

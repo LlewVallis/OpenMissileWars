@@ -14,8 +14,8 @@ import java.util.stream.Collectors;
 
 public class ListArenasCommand {
 
-    private ArenaPool arenaPool;
-    private TabExecutor executor;
+    private final ArenaPool arenaPool;
+    private final TabExecutor executor;
 
     public ListArenasCommand(ArenaPool arenaPool) {
         this.arenaPool = arenaPool;

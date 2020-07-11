@@ -24,14 +24,11 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
 @RequiredArgsConstructor
 public class ItemDeployHandler implements Listener {
-
-    private static final float FIREBALL_SIZE = 3.0f;
 
     private final ArenaPool arenaPool;
     private final StructureManager structureManager;

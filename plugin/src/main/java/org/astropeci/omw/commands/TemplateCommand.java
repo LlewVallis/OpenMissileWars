@@ -3,7 +3,6 @@ package org.astropeci.omw.commands;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.astropeci.omw.commandbuilder.*;
-import org.astropeci.omw.worlds.Hub;
 import org.astropeci.omw.worlds.Template;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;

@@ -14,7 +14,7 @@ import java.util.UUID;
 
 public class NightVisionHandler implements Listener {
 
-    private Set<UUID> nightVisionExclusions = new HashSet<>();
+    private final Set<UUID> nightVisionExclusions = new HashSet<>();
 
     private void giveNightVision(Player player) {
         if (nightVisionExclusions.contains(player.getUniqueId())) {
