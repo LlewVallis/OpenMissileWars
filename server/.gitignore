@@ -1,6 +1,7 @@
 *
 !.gitignore
 !paper.jar
+!agent.jar
 !start.sh
 !configs
 !plugins
