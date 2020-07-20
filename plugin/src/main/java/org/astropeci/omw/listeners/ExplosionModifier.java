@@ -15,7 +15,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import static org.astropeci.omw.ReflectionUtil.fetchClass;
 
@@ -28,13 +30,44 @@ public class ExplosionModifier implements Listener {
         List<Block> blocks = e.blockList();
 
         for (Block block : blocks) {
-            if (block.getType() == Material.MOVING_PISTON && wasMovingTntBlock(block)) {
+            if (block.getType() == Material.MOVING_PISTON && doesMovingPistonContainBlock(block, "BlockTNT")) {
                 createTnt(block.getLocation());
             }
         }
     }
 
-    private boolean wasMovingTntBlock(Block block) {
+    @EventHandler
+    public void onFireballExplode(EntityExplodeEvent e) {
+        if (e.getEntityType() == EntityType.FIREBALL) {
+            Set<Material> blacklistedBlocks = Set.of(
+                    Material.NETHER_PORTAL,
+                    Material.GLASS,
+                    Material.WHITE_STAINED_GLASS,
+                    Material.ORANGE_STAINED_GLASS,
+                    Material.MAGENTA_STAINED_GLASS,
+                    Material.LIGHT_BLUE_STAINED_GLASS,
+                    Material.YELLOW_STAINED_GLASS,
+                    Material.LIME_STAINED_GLASS,
+                    Material.PINK_STAINED_GLASS,
+                    Material.GRAY_STAINED_GLASS,
+                    Material.LIGHT_GRAY_STAINED_GLASS,
+                    Material.CYAN_STAINED_GLASS,
+                    Material.PURPLE_STAINED_GLASS,
+                    Material.BLUE_STAINED_GLASS,
+                    Material.BROWN_STAINED_GLASS,
+                    Material.GREEN_STAINED_GLASS,
+                    Material.RED_STAINED_GLASS,
+                    Material.BLACK_STAINED_GLASS
+            );
+
+            List<Block> blockList = e.blockList();
+            blockList.removeIf(block -> blacklistedBlocks.contains(block.getType()));
+            blockList.removeIf(block -> block.getType() == Material.MOVING_PISTON &&
+                    doesMovingPistonContainBlock(block, "BlockGlassAbstract"));
+        }
+    }
+
+    private boolean doesMovingPistonContainBlock(Block block, String blockClassName) {
         World world = block.getWorld();
 
         int x = block.getX();
@@ -46,8 +79,8 @@ public class ExplosionModifier implements Listener {
             Class<?> c_worldServer = fetchClass("$NMS.WorldServer");
             Class<?> c_blockPosition = fetchClass("$NMS.BlockPosition");
             Class<?> c_tileEntityPiston = fetchClass("$NMS.TileEntityPiston");
-            Class<?> c_blockTnt = fetchClass("$NMS.BlockTNT");
             Class<?> c_iBlockDataHolder = fetchClass("$NMS.IBlockDataHolder");
+            Class<?> blockOfInterest = fetchClass("$NMS." + blockClassName);
 
             Method m_craftWorld_getHandle = c_craftWorld.getDeclaredMethod("getHandle");
             Object nmsWorld = m_craftWorld_getHandle.invoke(world);
@@ -66,9 +99,7 @@ public class ExplosionModifier implements Listener {
             f_iBlockDataHolder_c.setAccessible(true);
             Object movingBlock = f_iBlockDataHolder_c.get(blockData);
 
-            if (c_blockTnt.isInstance(movingBlock)) {
-                return true;
-            }
+            return blockOfInterest.isInstance(movingBlock);
         } catch (Exception e) {
             Bukkit.getLogger().log(Level.WARNING, "Failed to handle exploding piston extension", e);
         }
@@ -85,4 +116,5 @@ public class ExplosionModifier implements Listener {
         int fuse = random.nextInt(20) + 10;
         tnt.setFuseTicks(fuse);
     }
+
 }

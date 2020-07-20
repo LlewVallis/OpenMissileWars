@@ -1,0 +1,1 @@
+return java.util.Optional.of(10000.0f);
