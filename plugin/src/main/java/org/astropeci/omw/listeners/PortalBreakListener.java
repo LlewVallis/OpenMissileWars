@@ -10,6 +10,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.plugin.Plugin;
@@ -22,7 +23,7 @@ public class PortalBreakListener implements Listener {
     private final ArenaPool arenaPool;
     private final Plugin plugin;
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onEntityExplode(EntityExplodeEvent e) {
         Location location = e.getLocation();
 
