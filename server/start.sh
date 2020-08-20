@@ -8,6 +8,10 @@ else
   echo Starting server with $ALLOCATED_MEMORY of RAM, use the PAPER_MEMORY environment variable to use a custom amount
 fi
 
+if [ ! -z "$MINECRAFT_EULA" ]; then
+  echo "eula=$MINECRAFT_EULA" > eula.txt
+fi
+
 if [ ! -f eula.txt ]; then
   echo You have not accepted the Minecraft End User License Agreement \(https://account.mojang.com/documents/minecraft_eula\)
   read -p "Would you like to accept it? (y/n) " response
