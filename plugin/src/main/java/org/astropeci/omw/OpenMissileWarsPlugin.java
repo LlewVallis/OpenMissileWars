@@ -11,6 +11,8 @@ import org.astropeci.omw.worlds.*;
 import org.bukkit.event.Listener;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.java.annotation.dependency.Dependency;
+import org.bukkit.plugin.java.annotation.dependency.DependsOn;
 import org.bukkit.plugin.java.annotation.permission.Permission;
 import org.bukkit.plugin.java.annotation.permission.Permissions;
 import org.bukkit.plugin.java.annotation.plugin.ApiVersion;
@@ -24,6 +26,7 @@ import org.bukkit.plugin.java.annotation.plugin.author.Author;
 @ApiVersion(ApiVersion.Target.v1_15)
 @Author("Llew Vallis <llewvallis@gmail.com>")
 @Website("https://github.com/LlewVallis/OpenMissileWars")
+@DependsOn(@Dependency("ProtocolLib"))
 @Permissions({
         @Permission(name = "omw.arena.join", defaultValue = PermissionDefault.TRUE),
         @Permission(name = "omw.github", defaultValue = PermissionDefault.TRUE),
@@ -63,6 +66,7 @@ public class OpenMissileWarsPlugin extends JavaPlugin {
         EquipmentProvider equipmentProvider = new EquipmentProvider();
 
         NightVisionHandler nightVisionHandler = new NightVisionHandler();
+        PistonBreakHandler pistonBreakHandler = new PistonBreakHandler(this);
 
         new HubCommand(hub).register(this);
         new TemplateCommand(template).register(this);
@@ -92,6 +96,9 @@ public class OpenMissileWarsPlugin extends JavaPlugin {
         registerEventHandler(new PortalBreakListener(arenaPool, this));
         registerEventHandler(new ExplosionModifier());
         registerEventHandler(nightVisionHandler);
+        registerEventHandler(pistonBreakHandler);
+
+        pistonBreakHandler.register();
     }
 
     private void registerEventHandler(Listener listener) {

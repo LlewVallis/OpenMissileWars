@@ -12,7 +12,7 @@ for dir in */; do
       echo No cache for "$ARTIFACT_URL", downloading
     fi
 
-    curl --output bin "$ARTIFACT_URL" && echo "$ARTIFACT_URL" > url-cached
+    curl -L --output bin "$ARTIFACT_URL" && echo "$ARTIFACT_URL" > url-cached
   fi
 
   cd ..
