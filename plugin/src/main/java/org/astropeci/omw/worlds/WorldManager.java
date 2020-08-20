@@ -37,7 +37,7 @@ public class WorldManager {
         world.setGameRule(GameRule.SPECTATORS_GENERATE_CHUNKS, false);
         world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true);
 
-        world.setFullTime(18000);
+        world.setFullTime(6000);
     }
 
     public void cleanArenas() {
