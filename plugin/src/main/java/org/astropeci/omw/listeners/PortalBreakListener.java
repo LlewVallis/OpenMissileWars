@@ -45,7 +45,7 @@ public class PortalBreakListener implements Listener {
         Optional<NamedArena> arenaOptional = arenaPool.getArenaForWorld(world);
 
         arenaOptional.ifPresent(arena -> {
-            boolean wasRunning = arena.arena.processWinner(team);
+            boolean wasRunning = arena.arena.processWinner(Optional.of(team));
 
             if (wasRunning) {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {

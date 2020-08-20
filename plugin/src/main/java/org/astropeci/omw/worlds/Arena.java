@@ -16,6 +16,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.logging.Level;
 
 public class Arena implements AutoCloseable {
@@ -90,13 +91,13 @@ public class Arena implements AutoCloseable {
         }
     }
 
-    public boolean processWinner(GameTeam team) {
+    public boolean processWinner(Optional<GameTeam> teamOptional) {
         if (ended) {
             return false;
         }
 
-        String teamName = team == GameTeam.GREEN ? "Green" : "Red";
-        ChatColor color = team == GameTeam.GREEN ? ChatColor.GREEN : ChatColor.RED;
+        String teamName = teamOptional.map(team -> team == GameTeam.GREEN ? "Green" : "Red").orElse("Diffy");
+        ChatColor color = teamOptional.map(team -> team == GameTeam.GREEN ? ChatColor.GREEN : ChatColor.RED).orElse(ChatColor.BLUE);
 
         TextComponent titleMessage = new TextComponent(teamName + " wins the game");
         titleMessage.setColor(color);

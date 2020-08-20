@@ -76,6 +76,7 @@ public class OpenMissileWarsPlugin extends JavaPlugin {
         new PingCommand().register(this);
         new GithubCommand().register(this);
         new IssueCommand().register(this);
+        new ResetArenaCommand(this, arenaPool).register(this);
 
         new JoinTeamCommand(GameTeam.GREEN, globalTeamManager, arenaPool, worldManager, equipmentProvider).register(this);
         new JoinTeamCommand(GameTeam.RED, globalTeamManager, arenaPool, worldManager, equipmentProvider).register(this);
