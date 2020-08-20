@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 python3 -V > /dev/null || exit 1
 
 if [ -z "$GITHUB_TOKEN" ]; then
