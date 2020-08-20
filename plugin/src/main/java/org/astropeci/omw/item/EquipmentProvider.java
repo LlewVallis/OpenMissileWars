@@ -18,12 +18,11 @@ public class EquipmentProvider {
     public void giveToPlayer(Player player, GameTeam team) {
         Color color = team == GameTeam.GREEN ? Color.LIME : Color.RED;
 
-        ItemStack helmet = new ItemStack(Material.LEATHER_HELMET);
         ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE);
         ItemStack leggings = new ItemStack(Material.LEATHER_LEGGINGS);
         ItemStack boots = new ItemStack(Material.LEATHER_BOOTS);
 
-        Set<ItemStack> armourPieces = Set.of(helmet, chestplate, leggings, boots);
+        Set<ItemStack> armourPieces = Set.of(chestplate, leggings, boots);
 
         for (ItemStack armourPiece : armourPieces) {
             ItemMeta meta = armourPiece.getItemMeta();
@@ -44,7 +43,6 @@ public class EquipmentProvider {
 
         PlayerInventory inventory = player.getInventory();
 
-        inventory.setHelmet(helmet);
         inventory.setChestplate(chestplate);
         inventory.setLeggings(leggings);
         inventory.setBoots(boots);
