@@ -1,0 +1,13 @@
+language: java
+jdk: openjdk11
+before_install:
+  - sudo apt-get -y install python3
+addons:
+  apt:
+    update: true
+script: {}
+deploy:
+  provider: script
+  script: bash deploy.sh
+  on:
+    branch: travis
