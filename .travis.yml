@@ -6,7 +6,7 @@ addons:
   apt:
     update: true
 script:
-  - true
+  - ./build.sh
 cache:
   - $HOME/.m2
 deploy:
