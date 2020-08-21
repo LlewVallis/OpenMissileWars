@@ -7,6 +7,8 @@ addons:
     update: true
 script:
   - true
+cache:
+  - $HOME/.m2
 deploy:
   provider: script
   script: bash deploy.sh
