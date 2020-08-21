@@ -9,20 +9,7 @@ if [ -z "$GITHUB_TOKEN" ]; then
   exit 1
 fi
 
-echo "Downloading artifacts"
-cd artifacts
-./setup.sh
-cd ..
-
-echo "Building plugin"
-cd plugin
-mvn package
-cd ..
-
-echo "Building agent"
-cd agent
-mvn package
-cd ..
+./build.sh
 
 if [ -e deployment ]; then
   echo "Cleaning previous deployment"

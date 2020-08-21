@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 ALLOCATED_MEMORY=2G
 
 if [ ! -z $PAPER_MEMORY ]; then
