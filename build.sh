@@ -9,10 +9,10 @@ cd ..
 
 echo "Building plugin"
 cd plugin
-mvn package
+mvn package -Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2
 cd ..
 
 echo "Building agent"
 cd agent
-mvn package
+mvn package -Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2
 cd ..
