@@ -7,12 +7,6 @@ This project encompasses both a plugin to emulate Missile Wars, and some scripts
 
 # Hosting
 
-## Connect to my existing server
-
-I've already installed OpenMissileWars on a public server which you can join with the IP `168.119.54.244`.
-Your ping should be roughly the same as it is on Cubekrowd, since it uses the same host.
-If you'd like to be OP on the server (for example for creative mode testing), ask `Llew Vallis#5734` on Discord.
-
 ## Run a prebuilt server
 
 ### Prerequisites
