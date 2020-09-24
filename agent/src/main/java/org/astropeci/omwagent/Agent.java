@@ -3,13 +3,10 @@ package org.astropeci.omwagent;
 import javassist.*;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.Instrumentation;
 import java.security.ProtectionDomain;
-import java.util.Date;
 
 public class Agent {
 
@@ -34,7 +31,7 @@ public class Agent {
 
     private static ClassPool classPool;
 
-    public static void premain(String args, Instrumentation instrumentation) throws FileNotFoundException {
+    public static void premain(String args, Instrumentation instrumentation) {
         classPool = new ClassPool();
         classPool.appendSystemPath();
 
@@ -45,7 +42,7 @@ public class Agent {
                 try {
                     classPool.makeClass(new ByteArrayInputStream(classfileBuffer));
 
-                    if (className.matches("net/minecraft/server/v[_a-zA-Z0-9]+/ExplosionDamageCalculatorBlock")) {
+                    if (className.matches("net/minecraft/server/v[_a-zA-Z0-9]+/ExplosionDamageCalculator")) {
                         return redefineExplosionDamageCalculator(className);
                     }
 
@@ -73,7 +70,7 @@ public class Agent {
                     continue;
                 }
 
-                String nmsPackage = className.substring(0, className.indexOf("ExplosionDamageCalculatorBlock") - 1);
+                String nmsPackage = className.substring(0, className.indexOf("ExplosionDamageCalculator") - 1);
                 String payload = EXPLOSION_DAMAGE_CALCULATOR_INJECTION.replaceAll("\\$NMS", nmsPackage);
 
                 behavior.insertBefore(payload);

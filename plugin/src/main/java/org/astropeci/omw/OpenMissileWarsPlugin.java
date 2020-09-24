@@ -61,7 +61,7 @@ public class OpenMissileWarsPlugin extends JavaPlugin {
         arenaPool = new ArenaPool(template);
         arenaPool.create("mw1");
 
-        structureManager = new StructureManager(worldManager);
+        structureManager = new StructureManager(this, worldManager);
 
         EquipmentProvider equipmentProvider = new EquipmentProvider();
 

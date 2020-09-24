@@ -1,5 +1,7 @@
 package org.astropeci.omw.structures;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import net.querz.nbt.io.NBTDeserializer;
@@ -11,6 +13,7 @@ import org.astropeci.omw.FileUtil;
 import org.astropeci.omw.teams.GameTeam;
 import org.astropeci.omw.worlds.WorldManager;
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -23,6 +26,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class StructureManager implements AutoCloseable {
 
+    @Getter(AccessLevel.PACKAGE)
+    private final Plugin plugin;
     private final WorldManager worldManager;
 
     private final NBTSerializer nbtSerializer = new NBTSerializer();
@@ -125,7 +130,7 @@ public class StructureManager implements AutoCloseable {
         }
     }
 
-    private Path getStructureDirectory(String author) {
+    /* package-private */ Path getStructureDirectory(String author) {
         Path worldDirectory = worldManager.getDefaultWorld().getWorldFolder().toPath();
         return worldDirectory.resolve(Path.of("generated", author, "structures"));
     }
