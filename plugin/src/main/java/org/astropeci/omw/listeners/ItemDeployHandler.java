@@ -105,13 +105,13 @@ public class ItemDeployHandler implements Listener {
         int height;
         int length;
 
-        ConfigurationSection missileConfig = plugin.getConfig()
-                .getConfigurationSection("missiles")
-                .getConfigurationSection(material.name());
+        ConfigurationSection missilesC = plugin.getConfig()
+                .getConfigurationSection("missiles");
 
-        plugin.getLogger().info(plugin.getConfig().getConfigurationSection("missiles")
-        .getConfigurationSection(material.name()).getString("structureName"));
+        if(missilesC == null)
+            return false;
 
+        ConfigurationSection missileConfig = missilesC.getConfigurationSection(material.name());
 
         if(missileConfig == null)
             return false;

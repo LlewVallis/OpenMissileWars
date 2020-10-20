@@ -47,3 +47,35 @@ missiles:
     width: 3
     height: 2
     length: 9
+items:
+  - type: simpleItem
+    material: CREEPER_SPAWN_EGG
+    name: Tomahawk
+
+  - type: simpleItem
+    material: GHAST_SPAWN_EGG
+    name: Juggernaut
+
+  - type: simpleItem
+    material: WITCH_SPAWN_EGG
+    name: Shieldbuster
+
+  - type: simpleItem
+    material: OCELOT_SPAWN_EGG
+    name: Lightning
+
+  - type: simpleItem
+    material: GUARDIAN_SPAWN_EGG
+    name: Guardian
+
+  - type: simpleItem
+    material: BLAZE_SPAWN_EGG
+    name: Fireball
+
+  - type: simpleItem
+    material: SNOWBALL
+    name: Shield
+
+  - type: itemStack
+    material: ARROW
+    amount: 3
