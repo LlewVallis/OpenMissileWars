@@ -2,6 +2,7 @@ package org.astropeci.omw.item;
 
 import com.destroystokyo.paper.Title;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.astropeci.omw.teams.GlobalTeamManager;
@@ -9,16 +10,15 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -30,16 +30,7 @@ public class PeriodicItemDispenser implements AutoCloseable {
     private final GlobalTeamManager globalTeamManager;
     private final Plugin plugin;
 
-    private final Set<ItemStack> items = Set.of(
-            simpleItem(Material.CREEPER_SPAWN_EGG, "Tomahawk"),
-            simpleItem(Material.GHAST_SPAWN_EGG, "Juggernaut"),
-            simpleItem(Material.WITCH_SPAWN_EGG, "Shieldbuster"),
-            simpleItem(Material.OCELOT_SPAWN_EGG, "Lightning"),
-            simpleItem(Material.GUARDIAN_SPAWN_EGG, "Guardian"),
-            simpleItem(Material.BLAZE_SPAWN_EGG, "Fireball"),
-            simpleItem(Material.SNOWBALL, "Shield"),
-            new ItemStack(Material.ARROW, 3)
-    );
+    private Set<ItemStack> items = null;
 
     private boolean shouldRun = true;
 
@@ -74,6 +65,8 @@ public class PeriodicItemDispenser implements AutoCloseable {
         } else {
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, this::start, 1);
         }
+
+        items = getItemsFromConfig();
     }
 
     private boolean shouldStart() {
@@ -111,6 +104,30 @@ public class PeriodicItemDispenser implements AutoCloseable {
         }
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, this::giveItemsPeriodically, ITEM_DROP_DELAY);
+    }
+
+    @SneakyThrows({InvalidConfigurationException.class})
+    private Set<ItemStack> getItemsFromConfig()
+    {
+        Set<ItemStack> set = new HashSet<ItemStack>();
+        List<Map<?, ?>> items = plugin.getConfig().getMapList("items");
+        for(Map<?, ?> i : items){
+            var m = (Map<String, ?>) i;
+            ItemStack item;
+            switch ((String)m.get("type")){
+                case "simpleItem":
+                    item = simpleItem(Material.getMaterial((String) m.get("material")), (String)m.get("name"));
+                    break;
+                case "itemStack":
+                    item = new ItemStack(Objects.requireNonNull(Material.getMaterial((String) m.get("material"))), (int)m.get("amount"));
+                    break;
+                default:
+                    throw new InvalidConfigurationException("Item type has to be either 'simpleItem' or 'itemStack'");
+            }
+
+            set.add(item);
+        }
+        return set;
     }
 
     private ItemStack simpleItem(Material material, String name) {

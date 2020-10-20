@@ -112,6 +112,7 @@ public class ItemDeployHandler implements Listener {
         plugin.getLogger().info(plugin.getConfig().getConfigurationSection("missiles")
         .getConfigurationSection(material.name()).getString("structureName"));
 
+
         if(missileConfig == null)
             return false;
         else{
