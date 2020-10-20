@@ -11,6 +11,8 @@ import org.astropeci.omw.teams.GameTeam;
 import org.astropeci.omw.teams.GlobalTeamManager;
 import org.astropeci.omw.worlds.ArenaPool;
 import org.bukkit.*;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Fireball;
@@ -103,64 +105,25 @@ public class ItemDeployHandler implements Listener {
         int height;
         int length;
 
-        switch (material) {
-            case CREEPER_SPAWN_EGG:
-                structureName = "tomahawk";
+        ConfigurationSection missileConfig = plugin.getConfig()
+                .getConfigurationSection("missiles")
+                .getConfigurationSection(material.name());
 
-                offsetX = 0;
-                offsetY = 4;
-                offsetZ = 4;
+        plugin.getLogger().info(plugin.getConfig().getConfigurationSection("missiles")
+        .getConfigurationSection(material.name()).getString("structureName"));
 
-                width = 2;
-                height = 2;
-                length = 13;
-                break;
-            case GUARDIAN_SPAWN_EGG:
-                structureName = "guardian";
+        if(missileConfig == null)
+            return false;
+        else{
+            structureName = missileConfig.getString("structureName");
 
-                offsetX = 1;
-                offsetY = 4;
-                offsetZ = 4;
+            offsetX = missileConfig.getInt("offsetX");
+            offsetY = missileConfig.getInt("offsetY");
+            offsetZ = missileConfig.getInt("offsetZ");
 
-                width = 3;
-                height = 3;
-                length = 8;
-                break;
-            case GHAST_SPAWN_EGG:
-                structureName = "juggernaut";
-
-                offsetX = 1;
-                offsetY = 4;
-                offsetZ = 4;
-
-                width = 3;
-                height = 3;
-                length = 11;
-                break;
-            case WITCH_SPAWN_EGG:
-                structureName = "shieldbuster";
-
-                offsetX = 1;
-                offsetY = 4;
-                offsetZ = 4;
-
-                width = 3;
-                height = 3;
-                length = 15;
-                break;
-            case OCELOT_SPAWN_EGG:
-                structureName = "lightning";
-
-                offsetX = 1;
-                offsetY = 4;
-                offsetZ = 5;
-
-                width = 3;
-                height = 2;
-                length = 9;
-                break;
-            default:
-                return false;
+            width = missileConfig.getInt("width");
+            height = missileConfig.getInt("height");
+            length = missileConfig.getInt("length");
         }
 
         target.setX(target.getX() + (team == GameTeam.GREEN ? 1 : -1) * offsetX);

@@ -46,6 +46,8 @@ public class OpenMissileWarsPlugin extends JavaPlugin {
     @Override
     @SneakyThrows({ ArenaAlreadyExistsException.class })
     public void onEnable() {
+        saveDefaultConfig();
+
         GlobalTeamManager globalTeamManager = new GlobalTeamManager();
         globalTeamManager.configScoreboard();
 
