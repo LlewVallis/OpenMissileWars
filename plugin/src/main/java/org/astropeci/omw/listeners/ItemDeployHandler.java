@@ -127,9 +127,24 @@ public class ItemDeployHandler implements Listener {
             length = missileConfig.getInt("length");
         }
 
-        target.setX(target.getX() + (team == GameTeam.GREEN ? 1 : -1) * offsetX);
+        final var mapConfig = plugin.getConfig()
+                .getConfigurationSection("map");
+
+        if(mapConfig == null)
+            return false;
+
+        final var mapSpawnThreshold = mapConfig.getInt("spawnThreshold");
+
+
+        final var dirFactor = team == GameTeam.GREEN ? -1 : 1;
+
+        target.setX(target.getX() + dirFactor * offsetX);
         target.setY(target.getY() - offsetY);
-        target.setZ(target.getZ() + (team == GameTeam.GREEN ? -1 : 1) * offsetZ);
+        if (Math.signum(target.getZ()) == dirFactor)
+            target.setZ(
+                ((Math.min(Math.abs(target.getZ()) + length + offsetZ, mapSpawnThreshold) - length) * dirFactor));
+        else
+            target.setZ(target.getZ() + dirFactor * offsetZ);
 
         boolean canSpawn = canSpawn(team, target, width, height, length);
 

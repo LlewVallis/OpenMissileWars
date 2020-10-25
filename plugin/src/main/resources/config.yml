@@ -79,3 +79,6 @@ items:
   - type: itemStack
     material: ARROW
     amount: 3
+
+map:
+  spawnThreshold: 48
