@@ -18,7 +18,8 @@ This project encompasses both a plugin to emulate Missile Wars, and some scripts
  1. Download the latest prebuilt server release form https://github.com/LlewVallis/OpenMissileWars/releases.
  2. Extract the archive, and navigate into the extracted directory.
  3. If you wish to accept Mojang's EULA (https://account.mojang.com/documents/minecraft_eula), create a file named `eula.txt` containing `eula=true`.
- 4. Run the `paper.jar` file using a command such as `java -jar paper.jar` or otherwise.
+ 4. Run the `start.sh` script to start the server, you can set the amount of memory to allocate with the `PAPER_MEMORY` environment variable if you wish.
+    It is important not to directly run the JAR file as some features will not work. 
 
 ## Compile and run from source
 
