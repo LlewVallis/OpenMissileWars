@@ -12,6 +12,7 @@ import org.astropeci.omw.teams.GlobalTeamManager;
 import org.astropeci.omw.worlds.ArenaPool;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
@@ -26,16 +27,32 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 
+import javax.naming.ConfigurationException;
 import java.util.Optional;
 import java.util.Set;
 
-@RequiredArgsConstructor
 public class ItemDeployHandler implements Listener {
 
     private final ArenaPool arenaPool;
     private final StructureManager structureManager;
     private final GlobalTeamManager globalTeamManager;
     private final Plugin plugin;
+
+    private final ConfigurationSection missilesSection;
+
+    @SneakyThrows({ InvalidConfigurationException.class })
+    public ItemDeployHandler(ArenaPool arenaPool, StructureManager structureManager, GlobalTeamManager globalTeamManager, Plugin plugin){
+        this.arenaPool = arenaPool;
+        this.structureManager = structureManager;
+        this.globalTeamManager = globalTeamManager;
+        this.plugin = plugin;
+
+        missilesSection = plugin.getConfig()
+                .getConfigurationSection("missiles");
+
+        if(missilesSection == null)
+            throw new InvalidConfigurationException("Config does not contain any missiles");
+    }
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent e) {
@@ -105,16 +122,11 @@ public class ItemDeployHandler implements Listener {
         int height;
         int length;
 
-        ConfigurationSection missilesC = plugin.getConfig()
-                .getConfigurationSection("missiles");
+        ConfigurationSection missileConfig = missilesSection.getConfigurationSection(material.name());
 
-        if(missilesC == null)
+        if(missileConfig == null){
             return false;
-
-        ConfigurationSection missileConfig = missilesC.getConfigurationSection(material.name());
-
-        if(missileConfig == null)
-            return false;
+        }
         else{
             structureName = missileConfig.getString("structureName");
 
