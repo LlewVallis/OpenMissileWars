@@ -21,7 +21,6 @@ import org.bukkit.plugin.Plugin;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 public class PeriodicItemDispenser implements AutoCloseable {
 
     private static final int ITEM_DROP_DELAY = 20 * 15;
@@ -30,9 +29,17 @@ public class PeriodicItemDispenser implements AutoCloseable {
     private final GlobalTeamManager globalTeamManager;
     private final Plugin plugin;
 
-    private Set<ItemStack> items = null;
+    private final Set<ItemStack> items;
 
     private boolean shouldRun = true;
+
+    public PeriodicItemDispenser(World world, GlobalTeamManager globalTeamManager, Plugin plugin){
+        this.world = world;
+        this.globalTeamManager = globalTeamManager;
+        this.plugin = plugin;
+
+        items = getItemsFromConfig();
+    }
 
     public void start() {
         if (shouldStart()) {
@@ -65,8 +72,6 @@ public class PeriodicItemDispenser implements AutoCloseable {
         } else {
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, this::start, 1);
         }
-
-        items = getItemsFromConfig();
     }
 
     private boolean shouldStart() {
