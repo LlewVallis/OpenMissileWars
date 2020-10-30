@@ -19,6 +19,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class PeriodicItemDispenser implements AutoCloseable {
@@ -114,36 +116,58 @@ public class PeriodicItemDispenser implements AutoCloseable {
     @SneakyThrows({InvalidConfigurationException.class})
     private Set<ItemStack> getItemsFromConfig()
     {
-        Set<ItemStack> set = new HashSet<ItemStack>();
-        List<Map<?, ?>> items = plugin.getConfig().getMapList("items");
-        for(Map<?, ?> i : items){
-            var m = (Map<String, ?>) i;
-            ItemStack item;
-            switch ((String)m.get("type")){
-                case "simpleItem":
-                    item = simpleItem(Material.getMaterial((String) m.get("material")), (String)m.get("name"));
-                    break;
-                case "itemStack":
-                    item = new ItemStack(Objects.requireNonNull(Material.getMaterial((String) m.get("material"))), (int)m.get("amount"));
-                    break;
-                default:
-                    throw new InvalidConfigurationException("Item type has to be either 'simpleItem' or 'itemStack'");
-            }
+        Set<ItemStack> itemSet = new HashSet<>();
+        List<Map<?, ?>> itemMapList = plugin.getConfig().getMapList("items");
+        for(Map<?, ?> i : itemMapList){
+            Map<String, ?> m = (Map<String, ?>) i;
 
-            set.add(item);
+            if(!m.containsKey("material"))
+                throw new InvalidConfigurationException("An item field does not have an associated material");
+
+            Material material = Material.getMaterial((String) m.get("material"));
+
+            if(material == null)
+                throw new InvalidConfigurationException("Invalid material" + m.get("material"));
+
+
+            ItemStack item = new ItemStack(material);;
+
+            ItemMeta meta = item.getItemMeta();
+
+            useMapFieldAsInt(m, "amount", item::setAmount);
+
+            useMapFieldAsString(m, "name", n -> meta.setDisplayName(ChatColor.RESET + (String)m.get("name")));
+
+            useMapFieldAsBoolean(m, "unbreakable", meta::setUnbreakable);
+
+            item.setItemMeta(meta);
+            itemSet.add(item);
         }
-        return set;
+        return itemSet;
     }
 
-    private ItemStack simpleItem(Material material, String name) {
-        ItemStack stack = new ItemStack(material);
-
-        ItemMeta meta = stack.getItemMeta();
-        meta.setDisplayName(ChatColor.RESET + name);
-        stack.setItemMeta(meta);
-
-        return stack;
+    private void useMapFieldAsString(Map<String, ?> map, String key, Consumer<String> f) throws InvalidConfigurationException{
+        if (map.containsKey(key))
+            if (map.get(key) instanceof String)
+                f.accept((String) map.get(key));
+            else
+                throw new InvalidConfigurationException("field '" + key + "' expected type String but got '" + map.get(key).getClass() + "'");
     }
+    private void useMapFieldAsInt(Map<String, ?> map, String key, Consumer<Integer> f) throws InvalidConfigurationException{
+        if (map.containsKey(key))
+            if (map.get(key) instanceof Integer)
+                f.accept((int) map.get(key));
+            else
+                throw new InvalidConfigurationException("field '" + key + "' expected type int but got '" + map.get(key).getClass() + "'");
+    }
+    private void useMapFieldAsBoolean(Map<String, ?> map, String key, Consumer<Boolean> f) throws InvalidConfigurationException{
+        if (map.containsKey(key))
+            if (map.get(key) instanceof Boolean)
+                f.accept((boolean) map.get(key));
+            else
+                throw new InvalidConfigurationException("field '" + key + "' expected type boolean but got '" + map.get(key).getClass() + "'");
+    }
+
 
     @Override
     public void close() {
