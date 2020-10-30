@@ -74,3 +74,6 @@ items:
 
 map:
   spawnThreshold: 48
+
+settings:
+  allowMissileSpawnInEnemyBase: true

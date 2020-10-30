@@ -1,9 +1,9 @@
 package org.astropeci.omw.listeners;
 
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.astropeci.omw.Settings;
 import org.astropeci.omw.structures.NoSuchStructureException;
 import org.astropeci.omw.structures.Structure;
 import org.astropeci.omw.structures.StructureManager;
@@ -27,7 +27,6 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 
-import javax.naming.ConfigurationException;
 import java.util.Optional;
 import java.util.Set;
 
@@ -40,6 +39,8 @@ public class ItemDeployHandler implements Listener {
 
     private final ConfigurationSection missilesSection;
 
+    private final Settings settings;
+
     @SneakyThrows({ InvalidConfigurationException.class })
     public ItemDeployHandler(ArenaPool arenaPool, StructureManager structureManager, GlobalTeamManager globalTeamManager, Plugin plugin){
         this.arenaPool = arenaPool;
@@ -47,11 +48,15 @@ public class ItemDeployHandler implements Listener {
         this.globalTeamManager = globalTeamManager;
         this.plugin = plugin;
 
-        missilesSection = plugin.getConfig()
+        FileConfiguration config = plugin.getConfig();
+
+        missilesSection = config
                 .getConfigurationSection("missiles");
 
         if(missilesSection == null)
             throw new InvalidConfigurationException("Config does not contain any missiles");
+
+        settings = Settings.fromConfig(config);
     }
 
     @EventHandler
@@ -145,18 +150,19 @@ public class ItemDeployHandler implements Listener {
         if(mapConfig == null)
             return false;
 
-        final var mapSpawnThreshold = mapConfig.getInt("spawnThreshold");
+        final int mapSpawnThreshold = mapConfig.getInt("spawnThreshold");
 
 
-        final var dirFactor = team == GameTeam.GREEN ? -1 : 1;
+        final int dirFactorX = team == GameTeam.GREEN ? 1 : -1;
+        final int dirFactorZ = team == GameTeam.GREEN ? -1 : 1;
 
-        target.setX(target.getX() + dirFactor * offsetX);
+        target.setX(target.getX() + dirFactorX * offsetX);
         target.setY(target.getY() - offsetY);
-        if (Math.signum(target.getZ()) == dirFactor)
+        if (!settings.allowMissileSpawnInEnemyBase && Math.signum(target.getZ()) == dirFactorZ)
             target.setZ(
-                ((Math.min(Math.abs(target.getZ()) + length + offsetZ, mapSpawnThreshold) - length) * dirFactor));
+                ((Math.min(Math.abs(target.getZ()) + length + offsetZ, mapSpawnThreshold) - length) * dirFactorZ));
         else
-            target.setZ(target.getZ() + dirFactor * offsetZ);
+            target.setZ(target.getZ() + dirFactorZ * offsetZ);
 
         boolean canSpawn = canSpawn(team, target, width, height, length);
 
