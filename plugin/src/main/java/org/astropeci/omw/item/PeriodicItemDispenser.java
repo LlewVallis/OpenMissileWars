@@ -107,6 +107,12 @@ public class PeriodicItemDispenser implements AutoCloseable {
 
             if (!inventory.contains(item.getType()) && inventory.getItemInOffHand().getType() != item.getType()) {
                 inventory.addItem(item);
+            } else if(item.getType() == Material.ARROW) {
+                for (ItemStack search : inventory.getContents()) {
+                    if (search.getType() == Material.ARROW) {
+                        search.setAmount(3);
+                    }
+                }
             } else {
                 player.sendActionBar(ChatColor.AQUA + item.getItemMeta().getDisplayName() + " already obtained!");
             }
