@@ -110,7 +110,9 @@ public class PeriodicItemDispenser implements AutoCloseable {
             } else if (item.getType() == Material.ARROW) {
                 for (ItemStack search : inventory.getContents()) {
                     if (search.getType() == Material.ARROW) {
-                        search.setAmount(3);
+                        if (search.getAmount() < 3) {
+                            search.setAmount(3);
+                        }
                         break;
                     }
                 }
