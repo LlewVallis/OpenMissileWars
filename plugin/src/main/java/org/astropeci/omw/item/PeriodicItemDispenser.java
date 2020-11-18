@@ -112,6 +112,8 @@ public class PeriodicItemDispenser implements AutoCloseable {
                     if (search.getType() == Material.ARROW) {
                         if (search.getAmount() < 3) {
                             search.setAmount(3);
+                        } else {
+                            player.sendActionBar(ChatColor.AQUA + "Arrows already obtained!");
                         }
                         break;
                     }
