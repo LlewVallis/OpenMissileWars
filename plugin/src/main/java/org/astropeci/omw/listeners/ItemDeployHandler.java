@@ -27,6 +27,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -37,24 +38,27 @@ public class ItemDeployHandler implements Listener {
     private final GlobalTeamManager globalTeamManager;
     private final Plugin plugin;
 
-    private final ConfigurationSection missilesSection;
-
+    private final ConfigurationSection missilesConfiguration;
     private final Settings settings;
 
     @SneakyThrows({ InvalidConfigurationException.class })
-    public ItemDeployHandler(ArenaPool arenaPool, StructureManager structureManager, GlobalTeamManager globalTeamManager, Plugin plugin){
+    public ItemDeployHandler(
+            ArenaPool arenaPool,
+            StructureManager structureManager,
+            GlobalTeamManager globalTeamManager,
+            Plugin plugin
+    ) {
         this.arenaPool = arenaPool;
         this.structureManager = structureManager;
         this.globalTeamManager = globalTeamManager;
         this.plugin = plugin;
 
         FileConfiguration config = plugin.getConfig();
+        missilesConfiguration = config.getConfigurationSection("missiles");
 
-        missilesSection = config
-                .getConfigurationSection("missiles");
-
-        if(missilesSection == null)
-            throw new InvalidConfigurationException("Config does not contain any missiles");
+        if (missilesConfiguration == null) {
+            throw new InvalidConfigurationException("config should contain a field named 'missiles'");
+        }
 
         settings = Settings.fromConfig(config);
     }
@@ -117,52 +121,28 @@ public class ItemDeployHandler implements Listener {
                 Structure.Rotation.ROTATE_180 :
                 Structure.Rotation.ROTATE_0;
 
-        String structureName;
-
-        int offsetX;
-        int offsetY;
-        int offsetZ;
-
-        int width;
-        int height;
-        int length;
-
-        ConfigurationSection missileConfig = missilesSection.getConfigurationSection(material.name());
-
-        if(missileConfig == null){
+        ConfigurationSection missileConfiguration = missilesConfiguration.getConfigurationSection(material.name());
+        if (missileConfiguration == null) {
+            // No missile exists for that material
             return false;
         }
-        else{
-            structureName = missileConfig.getString("structureName");
 
-            offsetX = missileConfig.getInt("offsetX");
-            offsetY = missileConfig.getInt("offsetY");
-            offsetZ = missileConfig.getInt("offsetZ");
+        String structureName = missileConfiguration.getString("structureName");
 
-            width = missileConfig.getInt("width");
-            height = missileConfig.getInt("height");
-            length = missileConfig.getInt("length");
-        }
+        int offsetX = missileConfiguration.getInt("offsetX");
+        int offsetY = missileConfiguration.getInt("offsetY");
+        int offsetZ = missileConfiguration.getInt("offsetZ");
 
-        final var mapConfig = plugin.getConfig()
-                .getConfigurationSection("map");
+        int width = missileConfiguration.getInt("width");
+        int height = missileConfiguration.getInt("height");
+        int length = missileConfiguration.getInt("length");
 
-        if(mapConfig == null)
-            return false;
-
-        final int mapSpawnThreshold = mapConfig.getInt("spawnThreshold");
-
-
-        final int dirFactorX = team == GameTeam.GREEN ? 1 : -1;
-        final int dirFactorZ = team == GameTeam.GREEN ? -1 : 1;
+        int dirFactorX = team == GameTeam.GREEN ? 1 : -1;
+        int dirFactorZ = team == GameTeam.GREEN ? -1 : 1;
 
         target.setX(target.getX() + dirFactorX * offsetX);
         target.setY(target.getY() - offsetY);
-        if (!settings.allowMissileSpawnInEnemyBase && Math.signum(target.getZ()) == dirFactorZ)
-            target.setZ(
-                ((Math.min(Math.abs(target.getZ()) + length + offsetZ, mapSpawnThreshold) - length) * dirFactorZ));
-        else
-            target.setZ(target.getZ() + dirFactorZ * offsetZ);
+        target.setZ(target.getZ() + dirFactorZ * offsetZ);
 
         boolean canSpawn = canSpawn(team, target, width, height, length);
 
@@ -200,6 +180,13 @@ public class ItemDeployHandler implements Listener {
                 team == GameTeam.GREEN ? Material.RED_STAINED_GLASS : Material.GREEN_STAINED_GLASS,
                 team == GameTeam.GREEN ? Material.PINK_STAINED_GLASS : Material.LIME_STAINED_GLASS
         );
+
+        if (!settings.isAllowSpawningMissilesInEnemyBases()) {
+            friendlyBlocks = new HashSet<>(friendlyBlocks);
+            friendlyBlocks.addAll(enemyBlocks);
+
+            enemyBlocks = new HashSet<>();
+        }
 
         int overriddenFriendlyBlocks = 0;
 

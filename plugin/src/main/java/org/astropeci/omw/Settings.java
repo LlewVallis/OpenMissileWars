@@ -1,5 +1,6 @@
 package org.astropeci.omw;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.bukkit.configuration.ConfigurationSection;
@@ -8,16 +9,19 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 @RequiredArgsConstructor
 public class Settings {
-    public final boolean allowMissileSpawnInEnemyBase;
+
+    @Getter
+    private final boolean allowSpawningMissilesInEnemyBases;
 
     @SneakyThrows({ InvalidConfigurationException.class })
-    public static Settings fromConfig(FileConfiguration config){
+    public static Settings fromConfig(FileConfiguration config) {
         ConfigurationSection settingsSection = config.getConfigurationSection("settings");
-        if(settingsSection == null)
-            throw new InvalidConfigurationException("Config has to contain a field called `settings`");
+        if (settingsSection == null) {
+            throw new InvalidConfigurationException("config should contain a field named 'settings'");
+        }
 
-        return new Settings(settingsSection.getBoolean("allowMissileSpawnInEnemyBase", true));
+        return new Settings(
+                settingsSection.getBoolean("allowSpawningMissilesInEnemyBases", true)
+        );
     }
-
-
 }

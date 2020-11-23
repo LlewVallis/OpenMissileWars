@@ -13,7 +13,6 @@ missiles:
     offsetX: 1
     offsetY: 4
     offsetZ: 4
-
     width: 3
     height: 3
     length: 8
@@ -23,7 +22,6 @@ missiles:
     offsetX: 1
     offsetY: 4
     offsetZ: 4
-
     width: 3
     height: 3
     length: 11
@@ -33,7 +31,6 @@ missiles:
     offsetX: 1
     offsetY: 4
     offsetZ: 4
-
     width: 3
     height: 3
     length: 15
@@ -43,10 +40,10 @@ missiles:
     offsetX: 1
     offsetY: 4
     offsetZ: 5
-
     width: 3
     height: 2
     length: 9
+
 items:
   - material: CREEPER_SPAWN_EGG
     name: Tomahawk
@@ -72,8 +69,5 @@ items:
   - material: ARROW
     amount: 3
 
-map:
-  spawnThreshold: 48
-
 settings:
-  allowMissileSpawnInEnemyBase: true
+  allowSpawningMissilesInEnemyBases: false

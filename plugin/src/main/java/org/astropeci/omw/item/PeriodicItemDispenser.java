@@ -1,7 +1,6 @@
 package org.astropeci.omw.item;
 
 import com.destroystokyo.paper.Title;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -10,7 +9,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -19,8 +17,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class PeriodicItemDispenser implements AutoCloseable {
@@ -35,7 +31,7 @@ public class PeriodicItemDispenser implements AutoCloseable {
 
     private boolean shouldRun = true;
 
-    public PeriodicItemDispenser(World world, GlobalTeamManager globalTeamManager, Plugin plugin){
+    public PeriodicItemDispenser(World world, GlobalTeamManager globalTeamManager, Plugin plugin) {
         this.world = world;
         this.globalTeamManager = globalTeamManager;
         this.plugin = plugin;
@@ -113,61 +109,57 @@ public class PeriodicItemDispenser implements AutoCloseable {
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, this::giveItemsPeriodically, ITEM_DROP_DELAY);
     }
 
-    @SneakyThrows({InvalidConfigurationException.class})
-    private Set<ItemStack> getItemsFromConfig()
-    {
-        Set<ItemStack> itemSet = new HashSet<>();
-        List<Map<?, ?>> itemMapList = plugin.getConfig().getMapList("items");
-        for(Map<?, ?> i : itemMapList){
-            Map<String, ?> m = (Map<String, ?>) i;
+    @SneakyThrows({ InvalidConfigurationException.class })
+    private Set<ItemStack> getItemsFromConfig() {
+        Set<ItemStack> items = new HashSet<>();
+        List<Map<?, ?>> itemConfigurations = plugin.getConfig().getMapList("items");
 
-            if(!m.containsKey("material"))
-                throw new InvalidConfigurationException("An item field does not have an associated material");
+        for(Map<?, ?> itemConfiguration : itemConfigurations) {
+            Object materialNameObject = getRequiredConfigProperty("material", itemConfiguration);
+            if (!(materialNameObject instanceof String)) {
+                throw new InvalidConfigurationException("item material was not a string");
+            }
 
-            Material material = Material.getMaterial((String) m.get("material"));
+            String materialName = (String) materialNameObject;
+            Material material = Material.getMaterial(materialName);
 
-            if(material == null)
-                throw new InvalidConfigurationException("Invalid material" + m.get("material"));
+            if (material == null) {
+                throw new InvalidConfigurationException("the material '" + materialName + "' does not exist");
+            }
 
-
-            ItemStack item = new ItemStack(material);;
-
+            ItemStack item = new ItemStack(material);
             ItemMeta meta = item.getItemMeta();
 
-            useMapFieldAsInt(m, "amount", item::setAmount);
+            Object amountObject = itemConfiguration.get("amount");
+            if (amountObject instanceof Integer) {
+                item.setAmount((Integer) amountObject);;
+            } else if (amountObject != null) {
+                throw new InvalidConfigurationException("item amount was not an integer");
+            }
 
-            useMapFieldAsString(m, "name", n -> meta.setDisplayName(ChatColor.RESET + (String)m.get("name")));
-
-            useMapFieldAsBoolean(m, "unbreakable", meta::setUnbreakable);
+            Object nameObject = itemConfiguration.get("name");
+            if (nameObject instanceof String) {
+                meta.setDisplayName(ChatColor.RESET.toString() + nameObject);
+            } else if (nameObject != null) {
+                throw new InvalidConfigurationException("item name was not a string");
+            }
 
             item.setItemMeta(meta);
-            itemSet.add(item);
+            items.add(item);
         }
-        return itemSet;
+
+        return items;
     }
 
-    private void useMapFieldAsString(Map<String, ?> map, String key, Consumer<String> f) throws InvalidConfigurationException{
-        if (map.containsKey(key))
-            if (map.get(key) instanceof String)
-                f.accept((String) map.get(key));
-            else
-                throw new InvalidConfigurationException("field '" + key + "' expected type String but got '" + map.get(key).getClass() + "'");
-    }
-    private void useMapFieldAsInt(Map<String, ?> map, String key, Consumer<Integer> f) throws InvalidConfigurationException{
-        if (map.containsKey(key))
-            if (map.get(key) instanceof Integer)
-                f.accept((int) map.get(key));
-            else
-                throw new InvalidConfigurationException("field '" + key + "' expected type int but got '" + map.get(key).getClass() + "'");
-    }
-    private void useMapFieldAsBoolean(Map<String, ?> map, String key, Consumer<Boolean> f) throws InvalidConfigurationException{
-        if (map.containsKey(key))
-            if (map.get(key) instanceof Boolean)
-                f.accept((boolean) map.get(key));
-            else
-                throw new InvalidConfigurationException("field '" + key + "' expected type boolean but got '" + map.get(key).getClass() + "'");
-    }
+    @SneakyThrows({ InvalidConfigurationException.class })
+    private Object getRequiredConfigProperty(String key, Map<?, ?> map) {
+        Object result = map.get(key);
+        if (result == null) {
+            throw new InvalidConfigurationException("the config key '" + key + "' was missing");
+        }
 
+        return result;
+    }
 
     @Override
     public void close() {
