@@ -1,7 +1,7 @@
 package org.astropeci.omw.item;
 
 import com.destroystokyo.paper.Title;
-import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.astropeci.omw.teams.GlobalTeamManager;
@@ -9,19 +9,16 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 public class PeriodicItemDispenser implements AutoCloseable {
 
     private static final int ITEM_DROP_DELAY = 20 * 15;
@@ -30,18 +27,17 @@ public class PeriodicItemDispenser implements AutoCloseable {
     private final GlobalTeamManager globalTeamManager;
     private final Plugin plugin;
 
-    private final Set<ItemStack> items = Set.of(
-            simpleItem(Material.CREEPER_SPAWN_EGG, "Tomahawk"),
-            simpleItem(Material.GHAST_SPAWN_EGG, "Juggernaut"),
-            simpleItem(Material.WITCH_SPAWN_EGG, "Shieldbuster"),
-            simpleItem(Material.OCELOT_SPAWN_EGG, "Lightning"),
-            simpleItem(Material.GUARDIAN_SPAWN_EGG, "Guardian"),
-            simpleItem(Material.BLAZE_SPAWN_EGG, "Fireball"),
-            simpleItem(Material.SNOWBALL, "Shield"),
-            new ItemStack(Material.ARROW, 3)
-    );
+    private final Set<ItemStack> items;
 
     private boolean shouldRun = true;
+
+    public PeriodicItemDispenser(World world, GlobalTeamManager globalTeamManager, Plugin plugin) {
+        this.world = world;
+        this.globalTeamManager = globalTeamManager;
+        this.plugin = plugin;
+
+        items = getItemsFromConfig();
+    }
 
     public void start() {
         if (shouldStart()) {
@@ -126,14 +122,56 @@ public class PeriodicItemDispenser implements AutoCloseable {
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, this::giveItemsPeriodically, ITEM_DROP_DELAY);
     }
 
-    private ItemStack simpleItem(Material material, String name) {
-        ItemStack stack = new ItemStack(material);
+    @SneakyThrows({ InvalidConfigurationException.class })
+    private Set<ItemStack> getItemsFromConfig() {
+        Set<ItemStack> items = new HashSet<>();
+        List<Map<?, ?>> itemConfigurations = plugin.getConfig().getMapList("items");
 
-        ItemMeta meta = stack.getItemMeta();
-        meta.setDisplayName(ChatColor.RESET + name);
-        stack.setItemMeta(meta);
+        for(Map<?, ?> itemConfiguration : itemConfigurations) {
+            Object materialNameObject = getRequiredConfigProperty("material", itemConfiguration);
+            if (!(materialNameObject instanceof String)) {
+                throw new InvalidConfigurationException("item material was not a string");
+            }
 
-        return stack;
+            String materialName = (String) materialNameObject;
+            Material material = Material.getMaterial(materialName);
+
+            if (material == null) {
+                throw new InvalidConfigurationException("the material '" + materialName + "' does not exist");
+            }
+
+            ItemStack item = new ItemStack(material);
+            ItemMeta meta = item.getItemMeta();
+
+            Object amountObject = itemConfiguration.get("amount");
+            if (amountObject instanceof Integer) {
+                item.setAmount((Integer) amountObject);;
+            } else if (amountObject != null) {
+                throw new InvalidConfigurationException("item amount was not an integer");
+            }
+
+            Object nameObject = itemConfiguration.get("name");
+            if (nameObject instanceof String) {
+                meta.setDisplayName(ChatColor.RESET.toString() + nameObject);
+            } else if (nameObject != null) {
+                throw new InvalidConfigurationException("item name was not a string");
+            }
+
+            item.setItemMeta(meta);
+            items.add(item);
+        }
+
+        return items;
+    }
+
+    @SneakyThrows({ InvalidConfigurationException.class })
+    private Object getRequiredConfigProperty(String key, Map<?, ?> map) {
+        Object result = map.get(key);
+        if (result == null) {
+            throw new InvalidConfigurationException("the config key '" + key + "' was missing");
+        }
+
+        return result;
     }
 
     @Override

@@ -1,0 +1,73 @@
+missiles:
+  CREEPER_SPAWN_EGG:
+    structureName: tomahawk
+    offsetX: 0
+    offsetY: 4
+    offsetZ: 4
+    width: 2
+    height: 2
+    length: 13
+
+  GUARDIAN_SPAWN_EGG:
+    structureName: guardian
+    offsetX: 1
+    offsetY: 4
+    offsetZ: 4
+    width: 3
+    height: 3
+    length: 8
+
+  GHAST_SPAWN_EGG:
+    structureName: juggernaut
+    offsetX: 1
+    offsetY: 4
+    offsetZ: 4
+    width: 3
+    height: 3
+    length: 11
+
+  WITCH_SPAWN_EGG:
+    structureName: shieldbuster
+    offsetX: 1
+    offsetY: 4
+    offsetZ: 4
+    width: 3
+    height: 3
+    length: 15
+
+  OCELOT_SPAWN_EGG:
+    structureName: lightning
+    offsetX: 1
+    offsetY: 4
+    offsetZ: 5
+    width: 3
+    height: 2
+    length: 9
+
+items:
+  - material: CREEPER_SPAWN_EGG
+    name: Tomahawk
+
+  - material: GHAST_SPAWN_EGG
+    name: Juggernaut
+
+  - material: WITCH_SPAWN_EGG
+    name: Shieldbuster
+
+  - material: OCELOT_SPAWN_EGG
+    name: Lightning
+
+  - material: GUARDIAN_SPAWN_EGG
+    name: Guardian
+
+  - material: BLAZE_SPAWN_EGG
+    name: Fireball
+
+  - material: SNOWBALL
+    name: Shield
+
+  - material: ARROW
+    amount: 3
+
+settings:
+  allowSpawningMissilesInEnemyBases: false
