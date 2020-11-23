@@ -96,6 +96,7 @@ missiles:
 
 Adding a missile does not automatically make it eligible as an item drop.
 To add a custom missile, place the structure file (ends with `.nbt`) in `world/generated/openmissilewars/structures` under your server directory.
+Custom missiles will automatically have terracotta, glass, ice and air mapped to team colored terracotta, glass (normal variant), glass (light variant) and structure voids.
 
 ## Adding item drops
 
@@ -110,9 +111,10 @@ items:
   - material: SNOWBALL
     # The custom name of the item rendered above the hotbar
     name: Shield
-  # Defaults to not setting a custom name
   - material: ARROW
+    name: Arrow
     # The amount of items to give in one drop
+    # If they have less than this amount of items (e.g. 2) it will be topped up
     amount: 3
 ```
 

@@ -99,27 +99,34 @@ public class PeriodicItemDispenser implements AutoCloseable {
         ItemStack item = itemList.get(0);
 
         for (Player player : players) {
-            PlayerInventory inventory = player.getInventory();
-
-            if (!inventory.contains(item.getType()) && inventory.getItemInOffHand().getType() != item.getType()) {
-                inventory.addItem(item);
-            } else if (item.getType() == Material.ARROW) {
-                for (ItemStack search : inventory.getContents()) {
-                    if (search.getType() == Material.ARROW) {
-                        if (search.getAmount() < 3) {
-                            search.setAmount(3);
-                        } else {
-                            player.sendActionBar(ChatColor.AQUA + "Arrows already obtained!");
-                        }
-                        break;
-                    }
-                }
-            } else {
-                player.sendActionBar(ChatColor.AQUA + item.getItemMeta().getDisplayName() + " already obtained!");
-            }
+            giveItem(player, item);
         }
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, this::giveItemsPeriodically, ITEM_DROP_DELAY);
+    }
+
+    private void giveItem(Player player, ItemStack item) {
+        PlayerInventory inventory = player.getInventory();
+
+        if (!inventory.contains(item.getType()) && inventory.getItemInOffHand().getType() != item.getType()) {
+            inventory.addItem(item);
+        } else {
+            for (ItemStack search : inventory.getContents()) {
+                if (search != null && search.getType() == item.getType()) {
+                    if (search.getAmount() < item.getAmount()) {
+                        search.setAmount(item.getAmount());
+                        return;
+                    }
+                }
+            }
+
+            String name = item.getItemMeta().getDisplayName();
+            if (item.getAmount() > 1) {
+                name += "s";
+            }
+
+            player.sendActionBar(ChatColor.AQUA + name + " already obtained!");
+        }
     }
 
     @SneakyThrows({ InvalidConfigurationException.class })
@@ -150,10 +157,10 @@ public class PeriodicItemDispenser implements AutoCloseable {
                 throw new InvalidConfigurationException("item amount was not an integer");
             }
 
-            Object nameObject = itemConfiguration.get("name");
+            Object nameObject = getRequiredConfigProperty("name", itemConfiguration);
             if (nameObject instanceof String) {
                 meta.setDisplayName(ChatColor.RESET.toString() + nameObject);
-            } else if (nameObject != null) {
+            } else {
                 throw new InvalidConfigurationException("item name was not a string");
             }
 

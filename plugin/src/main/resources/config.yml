@@ -67,6 +67,7 @@ items:
     name: Shield
 
   - material: ARROW
+    name: Arrow
     amount: 3
 
 settings:
