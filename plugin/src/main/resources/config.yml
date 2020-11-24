@@ -71,4 +71,4 @@ items:
     amount: 3
 
 settings:
-  allowSpawningMissilesInEnemyBases: false
+  allowSpawningMissilesInEnemyBases: true
