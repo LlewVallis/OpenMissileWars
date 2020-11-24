@@ -1,0 +1,29 @@
+main: org.astropeci.omw.OpenMissileWarsPlugin
+name: OpenMissileWars
+version: 1.0.0
+description: An open source recreation of the Missile Wars minigame
+author: Llew Vallis <llewvallis@gmail.com>
+website: https://github.com/LlewVallis/OpenMissileWars
+api-version: 1.16
+depend:
+  - ProtocolLib
+  - StructureBlockLib
+permissions:
+  omw.arena.join:
+    default: true
+  omw.github:
+    default: true
+  omw.hub.join:
+    default: true
+  omw.issue:
+    default: true
+  omw.team.join:
+    default: true
+  omw.arena.list:
+    default: true
+  omw.nightvis:
+    default: true
+  omw.ping:
+    default: true
+  omw.spectate:
+    default: true
