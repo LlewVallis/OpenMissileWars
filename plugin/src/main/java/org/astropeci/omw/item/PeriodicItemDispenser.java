@@ -3,6 +3,8 @@ package org.astropeci.omw.item;
 import com.destroystokyo.paper.Title;
 import lombok.SneakyThrows;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.astropeci.omw.teams.GlobalTeamManager;
 import org.bukkit.Bukkit;
@@ -18,6 +20,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class PeriodicItemDispenser implements AutoCloseable {
 
@@ -121,12 +124,37 @@ public class PeriodicItemDispenser implements AutoCloseable {
             }
 
             String name = item.getItemMeta().getDisplayName();
+            if (name.isBlank()) {
+                name = defaultItemName(item.getType());
+            }
+
             if (item.getAmount() > 1) {
                 name += "s";
             }
 
             player.sendActionBar(ChatColor.AQUA + name + " already obtained!");
         }
+    }
+
+    private String defaultItemName(Material material) {
+        StringBuilder result = new StringBuilder();
+        boolean nextCharShouldBeCapitalised = true;
+
+        for (char chr : material.name().toCharArray()) {
+            if (nextCharShouldBeCapitalised) {
+                result.append(Character.toUpperCase(chr));
+            } else {
+                result.append(Character.toLowerCase(chr));
+            }
+
+            nextCharShouldBeCapitalised = false;
+
+            if (Character.isSpaceChar(chr)) {
+                nextCharShouldBeCapitalised = true;
+            }
+        }
+
+        return result.toString();
     }
 
     @SneakyThrows({ InvalidConfigurationException.class })
@@ -157,10 +185,10 @@ public class PeriodicItemDispenser implements AutoCloseable {
                 throw new InvalidConfigurationException("item amount was not an integer");
             }
 
-            Object nameObject = getRequiredConfigProperty("name", itemConfiguration);
+            Object nameObject = itemConfiguration.get("name");
             if (nameObject instanceof String) {
                 meta.setDisplayName(ChatColor.RESET.toString() + nameObject);
-            } else {
+            } else if (nameObject != null) {
                 throw new InvalidConfigurationException("item name was not a string");
             }
 
