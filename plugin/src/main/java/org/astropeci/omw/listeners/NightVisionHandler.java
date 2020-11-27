@@ -24,7 +24,9 @@ public class NightVisionHandler implements Listener {
         player.addPotionEffect(new PotionEffect(
                 PotionEffectType.NIGHT_VISION,
                 Integer.MAX_VALUE,
-                0
+                0,
+                true,
+                false
         ));
     }
 
