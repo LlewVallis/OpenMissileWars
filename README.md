@@ -111,8 +111,9 @@ items:
   - material: SNOWBALL
     # The custom name of the item rendered above the hotbar
     name: Shield
+  # Without the name property the vanilla item names are used (no metadata is attached)
+  # In "already obtained" messages, the material name is used
   - material: ARROW
-    name: Arrow
     # The amount of items to give in one drop
     # If they have less than this amount of items (e.g. 2) it will be topped up
     amount: 3
