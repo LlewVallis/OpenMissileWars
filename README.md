@@ -1,6 +1,8 @@
 # OpenMissileWars
 
 [![Build Status](https://travis-ci.com/LlewVallis/OpenMissileWars.svg?branch=master)](https://travis-ci.com/LlewVallis/OpenMissileWars)
+[![Lines of Code](https://tokei.rs/b1/github/LlewVallis/OpenMissilewars?category=code)](https://github.com/LlewVallis/OpenMissileWars)
+[![Files](https://tokei.rs/b1/github/LlewVallis/OpenMissilewars?category=files)](https://github.com/LlewVallis/OpenMissileWars)
 
 OpenMissileWars is a free and open source recreation of the popular Missile Wars Minecraft minigame.
 This project encompasses both a plugin to emulate Missile Wars, and some scripts to setup a server running the plugin.
