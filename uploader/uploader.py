@@ -14,8 +14,14 @@ print("Fetching latest release")
 latest_release = repo.latest_release().tag_name
 version = str(int("".join([c for c in latest_release if str.isdigit(c)])) + 1)
 
-print("Creating new release")
-release = repo.create_release(tag_name="prebuilt-" + version, name="Prebuilt server #" + version)
+with open("../release-suffix.txt", "r") as release_suffix_file:
+    release_suffix = release_suffix_file.read().strip()
+
+tag_name=f"prebuilt-{version}"
+name=f"Packaged server #{version} {release_suffix}"
+
+print(f'Creating release {tag_name} called "{name}"')
+release = repo.create_release(tag_name=tag_name, name=name)
 
 print("Reading server archive")
 asset = open("server.tar.gz", "rb").read()
