@@ -27,3 +27,5 @@ permissions:
     default: true
   omw.spectate:
     default: true
+  omw.dangerous-command-alias:
+    default: op

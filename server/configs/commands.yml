@@ -1,4 +1,4 @@
 aliases:
-  stop: help
-  restart: help
-  reload: help
+  stop: openmissilewars:stop-warning
+  restart: openmissilewars:restart-warning
+  reload: openmissilewars:reload-warning

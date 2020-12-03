@@ -57,6 +57,10 @@ public class OpenMissileWarsPlugin extends JavaPlugin {
         new IssueCommand().register(this);
         new ResetArenaCommand(this, arenaPool).register(this);
 
+        new StopOverrideCommand().register(this);
+        new RestartOverrideCommand().register(this);
+        new ReloadOverrideCommand().register(this);
+
         new JoinTeamCommand(GameTeam.GREEN, globalTeamManager, arenaPool, worldManager, equipmentProvider).register(this);
         new JoinTeamCommand(GameTeam.RED, globalTeamManager, arenaPool, worldManager, equipmentProvider).register(this);
 
