@@ -66,12 +66,6 @@ public class ShieldHandler implements Listener {
                 Block block = world.getBlockAt(x, y, target.getBlockZ());
 
                 if (block.getType() == Material.OBSIDIAN || block.getType() == Material.NETHER_PORTAL) {
-                    if (shooter instanceof Entity) {
-                        TextComponent message = new TextComponent("A shild cannot be spawned there");
-                        message.setColor(ChatColor.RED);
-                        ((Entity) shooter).sendMessage(message);
-                    }
-
                     return;
                 }
             }
