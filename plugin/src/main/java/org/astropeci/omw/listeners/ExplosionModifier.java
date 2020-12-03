@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 import static org.astropeci.omw.ReflectionUtil.fetchClass;
 
@@ -31,7 +30,12 @@ public class ExplosionModifier implements Listener {
 
         for (Block block : blocks) {
             if (block.getType() == Material.MOVING_PISTON && doesMovingPistonContainBlock(block, "BlockTNT")) {
-                createTnt(block.getLocation());
+                float pistonStage = getPistonStage(block);
+                int extraFuse = Math.round((1 - pistonStage) * 2);
+                if (extraFuse < 0) extraFuse = 0;
+                if (extraFuse > 2) extraFuse = 2;
+                int fuse = extraFuse + 10;
+                createTnt(block.getLocation(), fuse);
             }
         }
     }
@@ -67,29 +71,55 @@ public class ExplosionModifier implements Listener {
         }
     }
 
-    private boolean doesMovingPistonContainBlock(Block block, String blockClassName) {
+    private Object getPistonNmsTileEntityUnsafe(Block block) throws Exception {
         World world = block.getWorld();
 
         int x = block.getX();
         int y = block.getY();
         int z = block.getZ();
 
+        Class<?> c_craftWorld = fetchClass("$OBC.CraftWorld");
+        Class<?> c_worldServer = fetchClass("$NMS.WorldServer");
+        Class<?> c_blockPosition = fetchClass("$NMS.BlockPosition");
+
+        Method m_craftWorld_getHandle = c_craftWorld.getDeclaredMethod("getHandle");
+        Object nmsWorld = m_craftWorld_getHandle.invoke(world);
+
+        Object blockPosition = c_blockPosition.getConstructor(int.class, int.class, int.class).newInstance(x, y, z);
+
+        Method m_worldServer_getTileEntity = c_worldServer.getDeclaredMethod("getTileEntity", c_blockPosition, boolean.class);
+        m_worldServer_getTileEntity.setAccessible(true);
+        return m_worldServer_getTileEntity.invoke(nmsWorld, blockPosition, true);
+    }
+
+    private float getPistonStage(Block block) {
         try {
-            Class<?> c_craftWorld = fetchClass("$OBC.CraftWorld");
+            Class<?> c_tileEntityPiston = fetchClass("$NMS.TileEntityPiston");
+
+            Object tileEntity = getPistonNmsTileEntityUnsafe(block);
+
+            Field f_tileEntityPiston_i = c_tileEntityPiston.getDeclaredField("j");
+            f_tileEntityPiston_i.setAccessible(true);
+            Object pistonStage = f_tileEntityPiston_i.get(tileEntity);
+
+            return (float) pistonStage;
+        } catch (Exception e) {
+            Bukkit.getLogger().log(Level.WARNING, "Failed to get piston extension stage", e);
+            return 0.5f;
+        }
+    }
+
+    private boolean doesMovingPistonContainBlock(Block block, String blockClassName) {
+        try {
             Class<?> c_worldServer = fetchClass("$NMS.WorldServer");
             Class<?> c_blockPosition = fetchClass("$NMS.BlockPosition");
             Class<?> c_tileEntityPiston = fetchClass("$NMS.TileEntityPiston");
             Class<?> c_iBlockDataHolder = fetchClass("$NMS.IBlockDataHolder");
-            Class<?> blockOfInterest = fetchClass("$NMS." + blockClassName);
-
-            Method m_craftWorld_getHandle = c_craftWorld.getDeclaredMethod("getHandle");
-            Object nmsWorld = m_craftWorld_getHandle.invoke(world);
-
-            Object blockPosition = c_blockPosition.getConstructor(int.class, int.class, int.class).newInstance(x, y, z);
+            Class<?> c_blockOfInterest = fetchClass("$NMS." + blockClassName);
 
             Method m_worldServer_getTileEntity = c_worldServer.getDeclaredMethod("getTileEntity", c_blockPosition, boolean.class);
             m_worldServer_getTileEntity.setAccessible(true);
-            Object tileEntity = m_worldServer_getTileEntity.invoke(nmsWorld, blockPosition, true);
+            Object tileEntity = getPistonNmsTileEntityUnsafe(block);
 
             Field f_tileEntityPiston_a = c_tileEntityPiston.getDeclaredField("a");
             f_tileEntityPiston_a.setAccessible(true);
@@ -99,22 +129,18 @@ public class ExplosionModifier implements Listener {
             f_iBlockDataHolder_c.setAccessible(true);
             Object movingBlock = f_iBlockDataHolder_c.get(blockData);
 
-            return blockOfInterest.isInstance(movingBlock);
+            return c_blockOfInterest.isInstance(movingBlock);
         } catch (Exception e) {
             Bukkit.getLogger().log(Level.WARNING, "Failed to handle exploding piston extension", e);
+            return false;
         }
-
-        return false;
     }
 
-    private void createTnt(Location location) {
+    private void createTnt(Location location, int fuse) {
         World world = location.getWorld();
         location.add(0.5, 0, 0.5);
 
         TNTPrimed tnt = (TNTPrimed) world.spawnEntity(location, EntityType.PRIMED_TNT);
-
-        int fuse = random.nextInt(20) + 10;
         tnt.setFuseTicks(fuse);
     }
-
 }
