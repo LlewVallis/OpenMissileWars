@@ -16,3 +16,8 @@ echo "Building agent"
 cd agent
 mvn package -Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2
 cd ..
+
+echo "Building launcher"
+cd launcher
+mvn package -Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2
+cd ..

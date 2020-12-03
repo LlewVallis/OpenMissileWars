@@ -23,8 +23,14 @@ name=f"Packaged server #{version} {release_suffix}"
 print(f'Creating release {tag_name} called "{name}"')
 release = repo.create_release(tag_name=tag_name, name=name)
 
+print("Reading launcher JAR")
+launcher_asset = open("launcher.jar", "rb").read()
+
+print("Uploading launcher")
+release.upload_asset(content_type="application/jar-archive", name="launcher.jar", asset=launcher_asset)
+
 print("Reading server archive")
-asset = open("server.tar.gz", "rb").read()
+server_asset = open("server.tar.gz", "rb").read()
 
 print("Uploading server archive")
-release.upload_asset(content_type="application/gzip", name="server.tar.gz", asset=asset)
+release.upload_asset(content_type="application/gzip", name="server.tar.gz", asset=server_asset)

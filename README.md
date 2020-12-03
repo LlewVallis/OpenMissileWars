@@ -5,33 +5,57 @@
 [![Files](https://tokei.rs/b1/github/LlewVallis/OpenMissilewars?category=files)](https://github.com/LlewVallis/OpenMissileWars)
 
 OpenMissileWars is a free and open source recreation of the popular Missile Wars Minecraft minigame.
-This project encompasses both a plugin to emulate Missile Wars, and some scripts to setup a server running the plugin.
+This project encompasses both a plugin to emulate Missile Wars, and the systems required to install, launch and manage OpenMissileWars servers.
 
-# Hosting
+# Connecting to the public version
 
-## Run a prebuilt server
+You can join the public version of OpenMissileWars at the IP `urmw.live`.
+If you require operator permission (e.g. for testing with creative mode), ask `Llew Vallis#5734` on Discord.
+
+# Hosting it yourself
+
+## Using the launcher (easiest, Windows support)
+
+The launcher will automatically download, launch, detect issues and show updates for OpenMissileWars.
+The launcher itself works with Java 8+ and will notify you if your Java installation is not supported by OpenMissileWars itself.
+The launcher will still allow you to run OpenMissileWars with an unsupported Java version if you wish.
 
 ### Prerequisites
 
- * Java (versions 11+ are recommended, but older versions may also work)
+* Java 8+
 
 ### Running
 
- 1. Download the latest prebuilt server release form https://github.com/LlewVallis/OpenMissileWars/releases.
- 2. Extract the archive, and navigate into the extracted directory.
- 3. If you wish to accept Mojang's EULA (https://account.mojang.com/documents/minecraft_eula), create a file named `eula.txt` containing `eula=true`.
- 4. Run the `start.sh` script to start the server, you can set the amount of memory to allocate with the `PAPER_MEMORY` environment variable if you wish.
-    It is important not to directly run the JAR file as some features will not work. 
+1. Download `launcher.jar` from the [the latest release](https://github.com/LlewVallis/OpenMissileWars/releases/latest).
+2. Run the JAR file (by double clicking it or otherwise) to run the graphical launcher.
+3. Run the JAR file on the command line with the `--nogui` (e.g. `java -jar launcher.jar --nogui`) option to run the command line launcher.
+   This is useful if you prefer command line interfaces or are running it on a server without a graphical environment.
+   There are several command line options you might find useful when using the launcher - use the `--help` argument to learn more.
 
-## Compile and run from source
+## Run a prebuilt server (harder, Unix only)
 
 ### Prerequisites
 
- * Shell (`sh`)
- * Maven
- * Git (or download the repository as a zip file instead of cloning)
- * Java (versions 11+ are recommended, but older versions may also work)
- * Curl
+* Shell (`sh`)
+* Java (versions 11+ are recommended, but older versions may also work)
+
+### Running
+
+1. Download `server.tar.gz` from the [the latest release](https://github.com/LlewVallis/OpenMissileWars/releases/latest).
+2. Extract the archive, and navigate into the extracted directory.
+3. If you wish to accept the [Minecraft EULA](https://account.mojang.com/documents/minecraft_eula), create a file named `eula.txt` containing `eula=true`.
+4. Run the `start.sh` script to start the server, you can set the amount of memory to allocate with the `PAPER_MEMORY` environment variable if you wish.
+   It is important not to directly run the JAR file as some features will not work
+
+## Compile and run from source (hardest, Unix only)
+
+### Prerequisites
+
+* Shell (`sh`)
+* Maven
+* Git (or download the repository as a zip file instead of cloning)
+* Java (versions 11+ are recommended, but older versions may also work)
+* Curl
  
 ### Running
 

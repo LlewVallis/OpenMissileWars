@@ -9,27 +9,9 @@ if [ -z "$GITHUB_TOKEN" ]; then
   exit 1
 fi
 
-./build.sh
+./create-deployment.sh
 
-if [ -e deployment ]; then
-  echo "Cleaning previous deployment"
-  rm -r deployment
-fi
-
-echo "Creating deployment"
-mkdir -p deployment
-cd deployment
-
-echo "Copying server"
-cp -RL ../server server
-
-echo "Creating tarball"
-tar -cf server.tar server
-
-echo "Gzipping tarball"
-gzip server.tar
-
-cd ../uploader
+cd uploader
 
 if [ ! -d venv ]; then
   echo Creating Python virtual env
