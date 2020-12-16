@@ -7,24 +7,25 @@
 OpenMissileWars is a free and open source recreation of the popular Missile Wars Minecraft minigame.
 This project encompasses both a plugin to emulate Missile Wars, and the systems required to install, launch and manage OpenMissileWars servers.
 
-# Connecting to the public version
+# Usage
+## Connecting to the public version
 
 You can join the public version of OpenMissileWars at the IP `urmw.live`.
 If you require operator permission (e.g. for testing with creative mode), ask `Llew Vallis#5734` on Discord.
 
-# Hosting it yourself
+## Hosting it yourself
 
-## Using the launcher (easiest, Windows support)
+### Using the launcher (easiest, Windows support)
 
 The launcher will automatically download, launch, detect issues and show updates for OpenMissileWars.
 The launcher itself works with Java 8+ and will notify you if your Java installation is not supported by OpenMissileWars itself.
 The launcher will still allow you to run OpenMissileWars with an unsupported Java version if you wish.
 
-### Prerequisites
+#### Prerequisites
 
 * Java 8+
 
-### Running
+#### Running
 
 1. Download `launcher.jar` from the [the latest release](https://github.com/LlewVallis/OpenMissileWars/releases/latest).
 2. Run the JAR file (by double clicking it or otherwise) to run the graphical launcher.
@@ -32,14 +33,14 @@ The launcher will still allow you to run OpenMissileWars with an unsupported Jav
    This is useful if you prefer command line interfaces or are running it on a server without a graphical environment.
    There are several command line options you might find useful when using the launcher - use the `--help` argument to learn more.
 
-## Run a prebuilt server (harder, Unix only)
+### Run a prebuilt server (harder, Unix only)
 
-### Prerequisites
+#### Prerequisites
 
 * Shell (`sh`)
 * Java (versions 11+ are recommended, but older versions may also work)
 
-### Running
+#### Running
 
 1. Download `server.tar.gz` from the [the latest release](https://github.com/LlewVallis/OpenMissileWars/releases/latest).
 2. Extract the archive, and navigate into the extracted directory.
@@ -47,9 +48,9 @@ The launcher will still allow you to run OpenMissileWars with an unsupported Jav
 4. Run the `start.sh` script to start the server, you can set the amount of memory to allocate with the `PAPER_MEMORY` environment variable if you wish.
    It is important not to directly run the JAR file as some features will not work
 
-## Compile and run from source (hardest, Unix only)
+### Compile and run from source (hardest, Unix only)
 
-### Prerequisites
+#### Prerequisites
 
 * Shell (`sh`)
 * Maven
@@ -57,7 +58,7 @@ The launcher will still allow you to run OpenMissileWars with an unsupported Jav
 * Java (versions 11+ are recommended, but older versions may also work)
 * Curl
  
-### Running
+#### Running
 
 Use the following set of commands to run the server, replacing `%RAM%` with the amount of memory you would like to run the server with (e.g. 1.5G, 512M).
 
@@ -67,9 +68,9 @@ cd OpenMissileWars
 PAPER_MEMORY=%RAM% ./start.sh
 ```
 
-# Commands
+## Commands
 
-## General usage
+### General usage
 
 * `hub` - Connect to the hub world.
 * `arena <name>` - Connect to the arena with the given name. When the server is started a default arena called `mw1` is created.
@@ -82,7 +83,7 @@ PAPER_MEMORY=%RAM% ./start.sh
 * `github` - Display a link to this repository.
 * `issue` - Display a link to the issue tracker.
 
-## Administrative
+### Administrative
 
 * `reset` - Restart the current arena without either team having to win.
 * `arena-create <name>` - Create a new arena with the given name. This will likely lag the game for a few seconds.
@@ -90,14 +91,14 @@ PAPER_MEMORY=%RAM% ./start.sh
 * `template` - Connect to the template world, all changes made in the template will be cloned into subsequently created arenas. Use /save-all to save your changes.
 * `structure-load <name> <x> <y> <z> [direction] [team]` - Load a missile or shield model in an arbitrary direction with an arbitrary color.
 
-# Configuration
+## Configuration
 
-## Spawning missiles in enemy bases
+### Spawning missiles in enemy bases
 
 By default, missiles can be spawned directly inside the enemy team's base.
 To disable this behavior, the `settings.allowSpawningMissilesInEnemyBases` configuration property can be set to `false`.
 
-## Adding new missiles
+### Adding new missiles
 
 The `missiles` section in the configuration file specifies what structure (if any) is spawned when a user clicks with a
 certain item.
@@ -124,7 +125,7 @@ Adding a missile does not automatically make it eligible as an item drop.
 To add a custom missile, place the structure file (ends with `.nbt`) in `world/generated/openmissilewars/structures` under your server directory.
 Custom missiles will automatically have terracotta, glass, ice and air mapped to team colored terracotta, glass (normal variant), glass (light variant) and structure voids.
 
-## Adding item drops
+### Adding item drops
 
 The `items` section of the configuration file specifies which items are eligible as regular drops when playing the game.
 As with the above section, this is best illustrated with an example.
@@ -146,3 +147,22 @@ items:
 ```
 
 All items have an equal probability of being given.
+
+# Development
+
+## Contributing
+
+All forms of contributions are welcome, whether that be through submitting issues, providing insight on existings issues or via pull requests.
+When contributing information by submitting or commenting on an issue, evidence to support any claims is appreciated, but by no means required.
+If you don't have hard evidence to back up a claim, or don't have time to present it, feel free to present it regardless.
+Unlike issue contributions, however, claims made in pull requests must be demonstratable or reproducible.
+This requirement mostly applies to [issues requiring research](https://github.com/LlewVallis/OpenMissileWars/labels/needs%20research).
+
+For the submission of pull requests specifically, it is usually best to target the development branch.
+The master branch of this repository is automatically packaged into a major release upon each commit.
+
+## What counts as a bug
+
+Any discrepancy between OpenMissileWars and CubeKrowd MissileWars that affects gameplay in any non-superficial way is considered a bug.
+That said, exceptions to this rule exist where the discrepancy is the result of a CubeKrowd MissileWars bug being intentionally excluded from OpenMissileWars.
+A bug in CubeKrowd MissileWars is any aspect of the game that is unintentional, largely unwanted and does not have a significant impact on gameplay.
