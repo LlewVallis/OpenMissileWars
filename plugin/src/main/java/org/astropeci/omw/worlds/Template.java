@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.astropeci.omw.teams.GlobalTeamManager;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
+import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.Plugin;
 
 import java.io.IOException;
@@ -19,7 +20,8 @@ import java.util.logging.Level;
 public class Template {
 
     private static final String TEMPLATE_WORLD_NAME = "template";
-    public static final VoidChunkGenerator VOID_GENERATOR = new VoidChunkGenerator();
+    private static final ChunkGenerator VOID_GENERATOR = new VoidChunkGenerator();
+
     private final GlobalTeamManager globalTeamManager;
     private final WorldManager worldManager;
     private final Hub hub;
@@ -55,9 +57,9 @@ public class Template {
             Bukkit.getLogger().log(Level.WARNING, "Failed to clone region files from " + source + " to " + dest, e);
         }
 
-        WorldCreator creator = new WorldCreator(worldName);
-        creator.copy(templateWorld);
-        creator.generator(VOID_GENERATOR);
+        WorldCreator creator = new WorldCreator(worldName)
+                .generator(VOID_GENERATOR)
+                .copy(templateWorld);
 
         Bukkit.getLogger().info("Loading " + worldName);
 
@@ -75,9 +77,8 @@ public class Template {
         if (world == null) {
             Bukkit.getLogger().info("No template world found, generating one");
 
-            WorldCreator creator = new WorldCreator(TEMPLATE_WORLD_NAME);
-
-            creator.generator(VOID_GENERATOR);
+            WorldCreator creator = new WorldCreator(TEMPLATE_WORLD_NAME)
+                    .generator(VOID_GENERATOR);
 
             World newWorld = creator.createWorld();
             worldManager.configureWorld(newWorld);
