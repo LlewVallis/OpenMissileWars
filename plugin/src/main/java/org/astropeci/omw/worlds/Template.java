@@ -19,8 +19,7 @@ import java.util.logging.Level;
 public class Template {
 
     private static final String TEMPLATE_WORLD_NAME = "template";
-    private static final String GENERATOR_SETTINGS = "{\"layers\":[],\"biome\":\"minecraft:plains\",\"structures\":{\"stronghold\":{\"distance\":0,\"spread\":0,\"count\":0},\"structures\":{}}}";
-
+    public static final VoidChunkGenerator VOID_GENERATOR = new VoidChunkGenerator();
     private final GlobalTeamManager globalTeamManager;
     private final WorldManager worldManager;
     private final Hub hub;
@@ -58,8 +57,7 @@ public class Template {
 
         WorldCreator creator = new WorldCreator(worldName);
         creator.copy(templateWorld);
-        creator.generatorSettings(GENERATOR_SETTINGS);
-        creator.generateStructures(false);
+        creator.generator(VOID_GENERATOR);
 
         Bukkit.getLogger().info("Loading " + worldName);
 
@@ -79,9 +77,7 @@ public class Template {
 
             WorldCreator creator = new WorldCreator(TEMPLATE_WORLD_NAME);
 
-            creator.type(WorldType.FLAT);
-            creator.generatorSettings(GENERATOR_SETTINGS);
-            creator.generateStructures(false);
+            creator.generator(VOID_GENERATOR);
 
             World newWorld = creator.createWorld();
             worldManager.configureWorld(newWorld);
