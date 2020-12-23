@@ -78,6 +78,7 @@ public class OpenMissileWarsPlugin extends JavaPlugin {
         registerEventHandler(pistonBreakHandler);
 
         pistonBreakHandler.register();
+        registerEventHandler(new ObsidianBreakPreventer());
     }
 
     private void registerEventHandler(Listener listener) {
