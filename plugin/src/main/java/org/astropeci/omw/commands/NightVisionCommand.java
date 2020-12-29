@@ -1,39 +1,26 @@
 package org.astropeci.omw.commands;
 
+import io.github.llewvallis.commandbuilder.*;
+import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.astropeci.omw.commandbuilder.*;
 import org.astropeci.omw.listeners.NightVisionHandler;
-import org.bukkit.command.TabExecutor;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 
+@RequiredArgsConstructor
 public class NightVisionCommand {
 
-    private final TabExecutor executor;
     private final NightVisionHandler handler;
 
-    public NightVisionCommand(NightVisionHandler handler) {
-        executor = new CommandBuilder().build(new ReflectionCommandCallback(this));
-
-        this.handler = handler;
+    public void register(PluginCommand command) {
+        new CommandBuilder().build(new ReflectionCommandCallback(this), command);
     }
 
-    public void register(Plugin plugin) {
-        CommandBuilder.registerCommand(
-                plugin,
-                "nightvis",
-                "Toggle the night vision effect",
-                "nightvis",
-                "omw.nightvis",
-                executor
-        );
-    }
-
-    @PlayerOnlyCommand
     @ExecuteCommand
-    public boolean execute(CommandContext ctx) {
-        boolean nightVision = handler.toggleNightVision((Player) ctx.sender);
+    @PlayerOnlyCommand
+    public void execute(CommandContext ctx) {
+        boolean nightVision = handler.toggleNightVision((Player) ctx.getSender());
 
         TextComponent statusComponent;
         if (nightVision) {
@@ -48,8 +35,6 @@ public class NightVisionCommand {
         leadupComponent.setColor(ChatColor.GREEN);
 
         TextComponent message = new TextComponent(leadupComponent, statusComponent);
-        ctx.sender.sendMessage(message);
-
-        return true;
+        ctx.getSender().sendMessage(message);
     }
 }

@@ -1,9 +1,9 @@
 package org.astropeci.omw.commands;
 
-import org.astropeci.omw.commandbuilder.ArgumentParseException;
-import org.astropeci.omw.commandbuilder.ArgumentParser;
-import org.astropeci.omw.commandbuilder.CommandContext;
-import org.astropeci.omw.commandbuilder.arguments.StringSetArgument;
+import io.github.llewvallis.commandbuilder.ArgumentParseException;
+import io.github.llewvallis.commandbuilder.ArgumentParser;
+import io.github.llewvallis.commandbuilder.CommandContext;
+import io.github.llewvallis.commandbuilder.arguments.StringSetArgument;
 import org.astropeci.omw.teams.GameTeam;
 
 import java.util.List;

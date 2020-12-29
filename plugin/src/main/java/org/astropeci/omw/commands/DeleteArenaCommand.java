@@ -1,51 +1,36 @@
 package org.astropeci.omw.commands;
 
+import io.github.llewvallis.commandbuilder.CommandBuilder;
+import io.github.llewvallis.commandbuilder.CommandContext;
+import io.github.llewvallis.commandbuilder.ExecuteCommand;
+import io.github.llewvallis.commandbuilder.ReflectionCommandCallback;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.astropeci.omw.commandbuilder.CommandBuilder;
-import org.astropeci.omw.commandbuilder.CommandContext;
-import org.astropeci.omw.commandbuilder.ExecuteCommand;
-import org.astropeci.omw.commandbuilder.ReflectionCommandCallback;
 import org.astropeci.omw.worlds.ArenaPool;
 import org.astropeci.omw.worlds.NamedArena;
 import org.astropeci.omw.worlds.NoSuchArenaException;
-import org.bukkit.command.TabExecutor;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.command.PluginCommand;
 
+@RequiredArgsConstructor
 public class DeleteArenaCommand {
 
     private final ArenaPool arenaPool;
-    private final TabExecutor executor;
 
-    public DeleteArenaCommand(ArenaPool arenaPool) {
-        this.arenaPool = arenaPool;
-
-        executor = new CommandBuilder()
-                .addArgument(new ArenaArgument(arenaPool))
-                .build(new ReflectionCommandCallback(this));
-    }
-
-    public void register(Plugin plugin) {
-        CommandBuilder.registerCommand(
-                plugin,
-                "arena-delete",
-                "Deletes an arena",
-                "arena-delete <name>",
-                "omw.arena.delete",
-                executor
-        );
+    public void register(PluginCommand command) {
+        new CommandBuilder()
+                .argument(new ArenaArgument(arenaPool))
+                .build(new ReflectionCommandCallback(this), command);
     }
 
     @ExecuteCommand
     @SneakyThrows({ NoSuchArenaException.class })
-    public boolean execute(CommandContext ctx, NamedArena arena) {
+    public void execute(CommandContext ctx, NamedArena arena) {
         arenaPool.delete(arena.name);
 
         TextComponent message = new TextComponent("Deleted " + arena.name);
         message.setColor(ChatColor.GREEN);
-        ctx.sender.spigot().sendMessage(message);
-
-        return true;
+        ctx.getSender().spigot().sendMessage(message);
     }
 }

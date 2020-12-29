@@ -1,44 +1,31 @@
 package org.astropeci.omw.commands;
 
+import io.github.llewvallis.commandbuilder.CommandBuilder;
+import io.github.llewvallis.commandbuilder.CommandContext;
+import io.github.llewvallis.commandbuilder.ExecuteCommand;
+import io.github.llewvallis.commandbuilder.ReflectionCommandCallback;
+import io.github.llewvallis.commandbuilder.arguments.StringArgument;
+import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.astropeci.omw.commandbuilder.CommandBuilder;
-import org.astropeci.omw.commandbuilder.CommandContext;
-import org.astropeci.omw.commandbuilder.ExecuteCommand;
-import org.astropeci.omw.commandbuilder.ReflectionCommandCallback;
-import org.astropeci.omw.commandbuilder.arguments.StringArgument;
 import org.astropeci.omw.worlds.ArenaAlreadyExistsException;
 import org.astropeci.omw.worlds.ArenaPool;
-import org.bukkit.command.TabExecutor;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.command.PluginCommand;
 
+@RequiredArgsConstructor
 public class CreateArenaCommand {
 
     private final ArenaPool arenaPool;
-    private final TabExecutor executor;
 
-    public CreateArenaCommand(ArenaPool arenaPool) {
-        this.arenaPool = arenaPool;
-
-        executor = new CommandBuilder()
-                .addArgument(new StringArgument())
-                .build(new ReflectionCommandCallback(this));
-    }
-
-    public void register(Plugin plugin) {
-        CommandBuilder.registerCommand(
-                plugin,
-                "arena-create",
-                "Creates a new arena",
-                "arena-create <name>",
-                "omw.arena.create",
-                executor
-        );
+    public void register(PluginCommand command) {
+        new CommandBuilder()
+                .argument(new StringArgument())
+                .build(new ReflectionCommandCallback(this), command);
     }
 
     @ExecuteCommand
-    public boolean execute(CommandContext ctx, String name) {
+    public void execute(CommandContext ctx, String name) {
         try {
             arenaPool.create(name);
 
@@ -53,13 +40,11 @@ public class CreateArenaCommand {
             );
             message.setColor(ChatColor.GREEN);
 
-            ctx.sender.spigot().sendMessage(message);
+            ctx.getSender().spigot().sendMessage(message);
         } catch (ArenaAlreadyExistsException e) {
             TextComponent message = new TextComponent("An arena with that name already exists");
             message.setColor(ChatColor.RED);
-            ctx.sender.spigot().sendMessage(message);
+            ctx.getSender().spigot().sendMessage(message);
         }
-
-        return true;
     }
 }

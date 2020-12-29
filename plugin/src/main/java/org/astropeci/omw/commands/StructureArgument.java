@@ -1,9 +1,9 @@
 package org.astropeci.omw.commands;
 
+import io.github.llewvallis.commandbuilder.ArgumentParseException;
+import io.github.llewvallis.commandbuilder.ArgumentParser;
+import io.github.llewvallis.commandbuilder.CommandContext;
 import lombok.RequiredArgsConstructor;
-import org.astropeci.omw.commandbuilder.ArgumentParseException;
-import org.astropeci.omw.commandbuilder.ArgumentParser;
-import org.astropeci.omw.commandbuilder.CommandContext;
 import org.astropeci.omw.structures.NoSuchStructureException;
 import org.astropeci.omw.structures.Structure;
 import org.astropeci.omw.structures.StructureManager;

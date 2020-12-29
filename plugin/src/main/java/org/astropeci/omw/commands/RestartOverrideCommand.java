@@ -1,44 +1,29 @@
 package org.astropeci.omw.commands;
 
+import io.github.llewvallis.commandbuilder.CommandBuilder;
+import io.github.llewvallis.commandbuilder.CommandContext;
+import io.github.llewvallis.commandbuilder.ExecuteCommand;
+import io.github.llewvallis.commandbuilder.ReflectionCommandCallback;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.astropeci.omw.commandbuilder.CommandBuilder;
-import org.astropeci.omw.commandbuilder.CommandContext;
-import org.astropeci.omw.commandbuilder.ExecuteCommand;
-import org.astropeci.omw.commandbuilder.ReflectionCommandCallback;
 import org.bukkit.Bukkit;
-import org.bukkit.command.TabExecutor;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Entity;
-import org.bukkit.plugin.Plugin;
 
 public class RestartOverrideCommand {
 
-    private final TabExecutor executor;
-
-    public RestartOverrideCommand() {
-        executor = new CommandBuilder().build(new ReflectionCommandCallback(this));
-    }
-
-    public void register(Plugin plugin) {
-        CommandBuilder.registerCommand(
-                plugin,
-                "restart-warning",
-                "Warning override for the /restart command",
-                "restart-warning",
-                "omw.dangerous-command-alias",
-                executor
-        );
+    public void register(PluginCommand command) {
+        new CommandBuilder().build(new ReflectionCommandCallback(this), command);
     }
 
     @ExecuteCommand
-    public boolean execute(CommandContext ctx) {
-        if (ctx.sender instanceof Entity) {
+    public void execute(CommandContext ctx) {
+        if (ctx.getSender() instanceof Entity) {
             TextComponent message = new TextComponent("Use /spigot:restart to restart the server\ndid you mean /reset?");
             message.setColor(ChatColor.RED);
-            ctx.sender.sendMessage(message);
-            return true;
+            ctx.getSender().sendMessage(message);
         } else {
-            return Bukkit.getServer().dispatchCommand(ctx.sender, "spigot:restart");
+            Bukkit.getServer().dispatchCommand(ctx.getSender(), "spigot:restart");
         }
     }
 }

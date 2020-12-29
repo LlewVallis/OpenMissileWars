@@ -1,41 +1,28 @@
 package org.astropeci.omw.commands;
 
+import io.github.llewvallis.commandbuilder.CommandBuilder;
+import io.github.llewvallis.commandbuilder.CommandContext;
+import io.github.llewvallis.commandbuilder.ExecuteCommand;
+import io.github.llewvallis.commandbuilder.ReflectionCommandCallback;
+import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.astropeci.omw.commandbuilder.CommandBuilder;
-import org.astropeci.omw.commandbuilder.CommandContext;
-import org.astropeci.omw.commandbuilder.ExecuteCommand;
-import org.astropeci.omw.commandbuilder.ReflectionCommandCallback;
 import org.astropeci.omw.worlds.ArenaPool;
-import org.bukkit.command.TabExecutor;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.command.PluginCommand;
 
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 public class ListArenasCommand {
 
     private final ArenaPool arenaPool;
-    private final TabExecutor executor;
 
-    public ListArenasCommand(ArenaPool arenaPool) {
-        this.arenaPool = arenaPool;
-
-        executor = new CommandBuilder().build(new ReflectionCommandCallback(this));
-    }
-
-    public void register(Plugin plugin) {
-        CommandBuilder.registerCommand(
-                plugin,
-                "arenas",
-                "Lists all arenas",
-                "arenas",
-                "omw.arena.list",
-                executor
-        );
+    public void register(PluginCommand command) {
+        new CommandBuilder().build(new ReflectionCommandCallback(this), command);
     }
 
     @ExecuteCommand
-    public boolean execute(CommandContext ctx) {
+    public void execute(CommandContext ctx) {
         String arenaString = arenaPool.getAllArenas().stream()
                 .map(arena -> arena.name)
                 .collect(Collectors.joining(", "));
@@ -53,8 +40,6 @@ public class ListArenasCommand {
             message = new TextComponent(prefix, suffix);
         }
 
-        ctx.sender.spigot().sendMessage(message);
-
-        return true;
+        ctx.getSender().spigot().sendMessage(message);
     }
 }

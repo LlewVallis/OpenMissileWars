@@ -1,13 +1,14 @@
 package org.astropeci.omw.commands;
 
+import io.github.llewvallis.commandbuilder.CommandBuilder;
+import io.github.llewvallis.commandbuilder.CommandContext;
+import io.github.llewvallis.commandbuilder.ExecuteCommand;
+import io.github.llewvallis.commandbuilder.ReflectionCommandCallback;
+import io.github.llewvallis.commandbuilder.arguments.BlockCoordArgument;
+import io.github.llewvallis.commandbuilder.arguments.StringSetArgument;
+import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.astropeci.omw.commandbuilder.CommandBuilder;
-import org.astropeci.omw.commandbuilder.CommandContext;
-import org.astropeci.omw.commandbuilder.ExecuteCommand;
-import org.astropeci.omw.commandbuilder.ReflectionCommandCallback;
-import org.astropeci.omw.commandbuilder.arguments.CoordArgument;
-import org.astropeci.omw.commandbuilder.arguments.StringSetArgument;
 import org.astropeci.omw.structures.Structure;
 import org.astropeci.omw.structures.StructureManager;
 import org.astropeci.omw.teams.GameTeam;
@@ -15,53 +16,41 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.command.ProxiedCommandSender;
-import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Entity;
-import org.bukkit.plugin.Plugin;
 
 import java.util.Optional;
 
+@RequiredArgsConstructor
 public class LoadStructureCommand {
 
-    private final TabExecutor executor;
+    private final StructureManager structureManager;
 
-    public LoadStructureCommand(StructureManager structureManager) {
-        executor = new CommandBuilder()
-                .addArgument(new StructureArgument(structureManager))
-                .addArgument(new CoordArgument(CoordArgument.Axis.X))
-                .addArgument(new CoordArgument(CoordArgument.Axis.Y))
-                .addArgument(new CoordArgument(CoordArgument.Axis.Z))
-                .addArgument(new StringSetArgument("south", "west", "north", "east").optional())
-                .addArgument(new TeamArgument().optional())
-                .build(new ReflectionCommandCallback(this));
-    }
-
-    public void register(Plugin plugin) {
-        CommandBuilder.registerCommand(
-                plugin,
-                "structure-load",
-                "Loads an OpenMissileWars structure",
-                "structure-load <name> <x> <y> <z> [direction] [team]",
-                "omw.structure.load",
-                executor
-        );
+    public void register(PluginCommand command) {
+        new CommandBuilder()
+                .argument(new StructureArgument(structureManager))
+                .argument(new BlockCoordArgument(BlockCoordArgument.Axis.X))
+                .argument(new BlockCoordArgument(BlockCoordArgument.Axis.Y))
+                .argument(new BlockCoordArgument(BlockCoordArgument.Axis.Z))
+                .argument(new StringSetArgument("south", "west", "north", "east").optional())
+                .argument(new TeamArgument().optional())
+                .build(new ReflectionCommandCallback(this), command);
     }
 
     @ExecuteCommand
-    public boolean execute(CommandContext ctx, Structure structure, int x, int y, int z, String direction, GameTeam team) {
-        Optional<World> worldOptional = getSenderWorld(ctx.sender);
+    public void execute(CommandContext ctx, Structure structure, int x, int y, int z, String direction, GameTeam team) {
+        Optional<World> worldOptional = getSenderWorld(ctx.getSender());
 
         if (worldOptional.isEmpty()) {
             TextComponent message = new TextComponent("Command sender must be in a world");
             message.setColor(ChatColor.RED);
-            ctx.sender.spigot().sendMessage(message);
-
-            return true;
+            ctx.getSender().spigot().sendMessage(message);
+            return;
         }
 
         if (direction == null) {
-            direction = inferDirection(ctx.sender);
+            direction = inferDirection(ctx.getSender());
         }
 
         if (team == null) {
@@ -96,9 +85,7 @@ public class LoadStructureCommand {
             message.setColor(ChatColor.RED);
         }
 
-        ctx.sender.spigot().sendMessage(message);
-
-        return true;
+        ctx.getSender().spigot().sendMessage(message);
     }
 
     private Optional<World> getSenderWorld(CommandSender sender) {

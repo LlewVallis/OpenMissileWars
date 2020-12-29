@@ -29,3 +29,76 @@ permissions:
     default: true
   omw.dangerous-command-alias:
     default: op
+commands:
+  arena:
+    usage: arena <arena>
+    description: Leave any active game and teleport to the spawn of an arena
+    permission: omw.arena.join
+  arena-create:
+    usage: arena-create <name>
+    description: Creates a new arena
+    permission: omw.arena.create
+  arena-delete:
+    usage: arena-delete <name>
+    description: Deletes an arena
+    permission: omw.arena.delete
+  github:
+    usage: github
+    description: Display a link to the OpenMissileWars GitHub page
+    permission: omw.github
+  hub:
+    usage: hub
+    description: Leave any active game and teleport to the spawn of the hub
+    permission: omw.hub.join
+  issue:
+    usage: issue
+    description: Display a link to the OpenMissilewars issue page
+    permission: omw.issue
+  green:
+    usage: green
+    description: Join the green team in the arena you are currently in
+    permission: omw.team.join
+  red:
+    usage: red
+    description: Join the red team in the arena you are currently in
+    permission: omw.team.join
+  arenas:
+    usage: arenas
+    description: List all arenas
+    permission: omw.arena.list
+  structure-load:
+    usage: structure-load <name> <x> <y> <z> [direction] [team]
+    description: Loads an OpenMissileWars structure
+    permission: omw.structure.load
+  nightvis:
+    usage: nightvis
+    description: Toggle the night vision effect
+    permission: omw.nightvis
+  ping:
+    usage: ping
+    description: Display your current ping to the server
+    permission: omw.ping
+  reload-warning:
+    usage: reload-warning
+    description: Warning override for the /reload command
+    permission: omw.dangerous-command-alias
+  restart-warning:
+    usage: restart-warning
+    description: Warning override for the /restart command
+    permission: omw.dangerous-command-alias
+  stop-warning:
+    usage: stop-warning
+    description: Warning override for the /stop command
+    permission: omw.dangerous-command-alias
+  reset:
+    usage: reset
+    description: Instantly end the arena you are in and start a new one
+    permission: omw.arena.reset
+  sp:
+    usage: sp
+    description: Spectate a game in an arena
+    permission: omw.spectate
+  template:
+    usage: template
+    description: Leave any active game and teleport to the spawn of the template
+    permission: omw.template.join

@@ -1,8 +1,9 @@
 package org.astropeci.omw.commands;
 
-import org.astropeci.omw.commandbuilder.ArgumentParseException;
-import org.astropeci.omw.commandbuilder.ArgumentParser;
-import org.astropeci.omw.commandbuilder.CommandContext;
+import io.github.llewvallis.commandbuilder.ArgumentParseException;
+import io.github.llewvallis.commandbuilder.ArgumentParser;
+import io.github.llewvallis.commandbuilder.CommandContext;
+import lombok.RequiredArgsConstructor;
 import org.astropeci.omw.worlds.Arena;
 import org.astropeci.omw.worlds.ArenaPool;
 import org.astropeci.omw.worlds.NamedArena;
@@ -11,13 +12,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 public class ArenaArgument implements ArgumentParser<NamedArena> {
 
     private final ArenaPool arenaPool;
-
-    public ArenaArgument(ArenaPool arenaPool) {
-        this.arenaPool = arenaPool;
-    }
 
     @Override
     public NamedArena parse(String argument, int position, CommandContext context) throws ArgumentParseException {

@@ -43,26 +43,28 @@ public class OpenMissileWarsPlugin extends JavaPlugin {
         NightVisionHandler nightVisionHandler = new NightVisionHandler();
         PistonBreakHandler pistonBreakHandler = new PistonBreakHandler(this);
 
-        new HubCommand(hub).register(this);
-        new TemplateCommand(template).register(this);
-        new ArenaCommand(arenaPool).register(this);
-        new ListArenasCommand(arenaPool).register(this);
-        new CreateArenaCommand(arenaPool).register(this);
-        new DeleteArenaCommand(arenaPool).register(this);
-        new LoadStructureCommand(structureManager).register(this);
-        new NightVisionCommand(nightVisionHandler).register(this);
-        new SpectateCommand(arenaPool).register(this);
-        new PingCommand().register(this);
-        new GithubCommand().register(this);
-        new IssueCommand().register(this);
-        new ResetArenaCommand(this, arenaPool).register(this);
+        new HubCommand(hub).register(getCommand("hub"));
+        new TemplateCommand(template).register(getCommand("template"));
+        new ArenaCommand(arenaPool).register(getCommand("arena"));
+        new ListArenasCommand(arenaPool).register(getCommand("arenas"));
+        new CreateArenaCommand(arenaPool).register(getCommand("arena-create"));
+        new DeleteArenaCommand(arenaPool).register(getCommand("arena-delete"));
+        new LoadStructureCommand(structureManager).register(getCommand("structure-load"));
+        new NightVisionCommand(nightVisionHandler).register(getCommand("nightvis"));
+        new SpectateCommand(arenaPool).register(getCommand("sp"));
+        new PingCommand().register(getCommand("ping"));
+        new GithubCommand().register(getCommand("github"));
+        new IssueCommand().register(getCommand("issue"));
+        new ResetArenaCommand(this, arenaPool).register(getCommand("reset"));
 
-        new StopOverrideCommand().register(this);
-        new RestartOverrideCommand().register(this);
-        new ReloadOverrideCommand().register(this);
+        new StopOverrideCommand().register(getCommand("stop-warning"));
+        new RestartOverrideCommand().register(getCommand("restart-warning"));
+        new ReloadOverrideCommand().register(getCommand("reload-warning"));
 
-        new JoinTeamCommand(GameTeam.GREEN, globalTeamManager, arenaPool, worldManager, equipmentProvider).register(this);
-        new JoinTeamCommand(GameTeam.RED, globalTeamManager, arenaPool, worldManager, equipmentProvider).register(this);
+        new JoinTeamCommand(GameTeam.GREEN, globalTeamManager, arenaPool, worldManager, equipmentProvider)
+                .register(getCommand("green"));
+        new JoinTeamCommand(GameTeam.RED, globalTeamManager, arenaPool, worldManager, equipmentProvider)
+                .register(getCommand("red"));
 
         registerEventHandler(new SpawnHandler(hub, arenaPool, globalTeamManager));
         registerEventHandler(new WelcomeHandler());

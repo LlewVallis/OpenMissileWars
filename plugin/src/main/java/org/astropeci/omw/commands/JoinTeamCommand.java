@@ -1,8 +1,9 @@
 package org.astropeci.omw.commands;
 
+import io.github.llewvallis.commandbuilder.*;
+import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.astropeci.omw.commandbuilder.*;
 import org.astropeci.omw.item.EquipmentProvider;
 import org.astropeci.omw.teams.GameTeam;
 import org.astropeci.omw.teams.GlobalTeamManager;
@@ -11,12 +12,12 @@ import org.astropeci.omw.worlds.NamedArena;
 import org.astropeci.omw.worlds.WorldManager;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.command.TabExecutor;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 
 import java.util.Optional;
 
+@RequiredArgsConstructor
 public class JoinTeamCommand {
 
     private final GameTeam team;
@@ -25,40 +26,21 @@ public class JoinTeamCommand {
     private final WorldManager worldManager;
     private final EquipmentProvider equipmentProvider;
 
-    private final TabExecutor executor;
-
-    public JoinTeamCommand(GameTeam team, GlobalTeamManager globalTeamManager, ArenaPool arenaPool, WorldManager worldManager, EquipmentProvider equipmentProvider) {
-        executor = new CommandBuilder().build(new ReflectionCommandCallback(this));
-
-        this.team = team;
-        this.globalTeamManager = globalTeamManager;
-        this.arenaPool = arenaPool;
-        this.worldManager = worldManager;
-        this.equipmentProvider = equipmentProvider;
+    public void register(PluginCommand command) {
+        new CommandBuilder().build(new ReflectionCommandCallback(this), command);
     }
 
-    public void register(Plugin plugin) {
-        CommandBuilder.registerCommand(
-                plugin,
-                team == GameTeam.GREEN ? "green" : "red",
-                "Join a team in the arena you are currently in",
-                team == GameTeam.GREEN ? "green" : "red",
-                "omw.team.join",
-                executor
-        );
-    }
-
-    @PlayerOnlyCommand
     @ExecuteCommand
-    public boolean execute(CommandContext ctx) {
-        Player player = (Player) ctx.sender;
+    @PlayerOnlyCommand
+    public void execute(CommandContext ctx) {
+        Player player = (Player) ctx.getSender();
         Optional<NamedArena> arenaOptional = arenaPool.getPlayerArena(player);
 
         if (arenaOptional.isEmpty()) {
             TextComponent message = new TextComponent("You must be in an arena to join a team");
             message.setColor(ChatColor.RED);
-            ctx.sender.sendMessage(message);
-            return true;
+            ctx.getSender().sendMessage(message);
+            return;
         }
 
         NamedArena arena = arenaOptional.get();
@@ -87,8 +69,6 @@ public class JoinTeamCommand {
             message.setColor(ChatColor.RED);
         }
 
-        ctx.sender.sendMessage(message);
-
-        return true;
+        ctx.getSender().sendMessage(message);
     }
 }
