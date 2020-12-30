@@ -7,3 +7,6 @@ spawn-limits:
   ambient: 0
 auto-updater:
   enabled: false
+worlds:
+  world:
+    generator: OpenMissileWars:void

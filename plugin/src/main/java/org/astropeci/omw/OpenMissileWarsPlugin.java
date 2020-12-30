@@ -8,7 +8,11 @@ import org.astropeci.omw.structures.StructureManager;
 import org.astropeci.omw.teams.GameTeam;
 import org.astropeci.omw.teams.GlobalTeamManager;
 import org.astropeci.omw.worlds.*;
+import org.bukkit.Bukkit;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.server.ServerLoadEvent;
+import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class OpenMissileWarsPlugin extends JavaPlugin {
@@ -17,10 +21,20 @@ public class OpenMissileWarsPlugin extends JavaPlugin {
     private StructureManager structureManager;
 
     @Override
-    @SneakyThrows({ ArenaAlreadyExistsException.class })
     public void onEnable() {
         saveDefaultConfig();
 
+        Bukkit.getPluginManager().registerEvents(new Listener() {
+
+            @EventHandler
+            private void onServerLoad(ServerLoadEvent e) {
+                OpenMissileWarsPlugin.this.onServerLoad();
+            }
+        }, this);
+    }
+
+    @SneakyThrows({ ArenaAlreadyExistsException.class })
+    private void onServerLoad() {
         GlobalTeamManager globalTeamManager = new GlobalTeamManager();
         globalTeamManager.configScoreboard();
 
@@ -83,13 +97,22 @@ public class OpenMissileWarsPlugin extends JavaPlugin {
         registerEventHandler(new ObsidianBreakPreventer());
     }
 
+    @Override
+    public ChunkGenerator getDefaultWorldGenerator(String worldName, String id) {
+        if ("void".equals(id)) {
+            return new VoidChunkGenerator();
+        } else {
+            return null;
+        }
+    }
+
     private void registerEventHandler(Listener listener) {
         getServer().getPluginManager().registerEvents(listener, this);
     }
 
     @Override
     public void onDisable() {
-        arenaPool.close();
-        structureManager.close();
+        if (arenaPool != null) arenaPool.close();
+        if (structureManager != null) structureManager.close();
     }
 }

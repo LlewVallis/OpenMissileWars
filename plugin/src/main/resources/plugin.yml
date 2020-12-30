@@ -5,6 +5,7 @@ description: An open source recreation of the Missile Wars minigame
 author: Llew Vallis <llewvallis@gmail.com>
 website: https://github.com/LlewVallis/OpenMissileWars
 api-version: 1.16
+load: STARTUP
 depend:
   - ProtocolLib
   - StructureBlockLib
