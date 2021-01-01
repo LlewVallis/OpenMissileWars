@@ -6,12 +6,16 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.concurrent.Callable;
 
+/**
+ * Handles collecting command line arguments and then delegating to either the GUI or CLI flow to run the launcher.
+ */
 @CommandLine.Command(
         name = "omw-launcher",
         description = "The OpenMissileWars launcher"
 )
 public class Main implements Callable<Integer> {
 
+    // Adds the help argument, the variable is not actually required since Picocli handles it
     @CommandLine.Option(names = {"--help"}, usageHelp = true, description = "Show the help menu for this command")
     private boolean help;
 
@@ -27,6 +31,9 @@ public class Main implements Callable<Integer> {
     @CommandLine.Option(names = {"--memory"}, description = "Set the mebibytes of RAM allocated to the server when it is launched", defaultValue = "2048")
     private int memory;
 
+    /**
+     * Starts the launcher, not handling errors or exit codes.
+     */
     private void run() {
         versionInput = versionInput.trim();
 
@@ -61,6 +68,9 @@ public class Main implements Callable<Integer> {
         System.exit(code);
     }
 
+    /**
+     * Runs the launcher, handling any errors and producing an exit code. Invoked by Picocli.
+     */
     @Override
     public Integer call() {
         try {

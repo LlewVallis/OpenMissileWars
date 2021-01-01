@@ -6,8 +6,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.function.Consumer;
 
+/**
+ * An input stream which occasionally notifies a callback of how many bytes have been read.
+ *
+ * The stream aims to update the listener every 250ms, but this is not guaranteed. Furthermore, no updates will be
+ * provided if no bytes are read or a bulk read operation is exceedingly slow.
+ */
 @RequiredArgsConstructor
-class ProgressInputStream extends InputStream {
+public class ProgressInputStream extends InputStream {
 
     private final InputStream underlying;
     private final Consumer<Long> listener;
@@ -17,6 +23,7 @@ class ProgressInputStream extends InputStream {
 
     @Override
     public int read() throws IOException {
+        // Attempt to read a byte, if successful count one byte
         int value = underlying.read();
         if (value != -1) {
             addCount(1);
@@ -26,6 +33,7 @@ class ProgressInputStream extends InputStream {
 
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
+        // Attempt to read up to len bytes, if the end of the stream hasn't been reached update the count accordingly
         int amount = underlying.read(b, off, len);
         if (amount != -1) {
             addCount(amount);
@@ -33,9 +41,13 @@ class ProgressInputStream extends InputStream {
         return amount;
     }
 
+    /**
+     * Updates the internal byte count and notifies the listener if it has not received an update recently.
+     */
     private void addCount(long amount) {
         count += amount;
 
+        // De-dupe if an update was provided in the last 250ms
         long now = System.currentTimeMillis();
         if (now > lastUpdate + 250) {
             lastUpdate = now;
