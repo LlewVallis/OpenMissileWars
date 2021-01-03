@@ -6,6 +6,7 @@ branches:
   - /^prebuilt.*$/
 before_install:
   - sudo apt-get -y install python3 python3-venv
+  - nvm install 14
 addons:
   apt:
     update: true
