@@ -2,6 +2,8 @@ package org.astropeci.omw.worlds;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.astropeci.omw.settings.ArenaSettings;
+import org.astropeci.omw.settings.GlobalSettings;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -12,6 +14,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ArenaPool implements AutoCloseable {
 
+    private final GlobalSettings settings;
     private final Template template;
 
     private final Map<String, Arena> arenas = new HashMap<>();
@@ -23,7 +26,9 @@ public class ArenaPool implements AutoCloseable {
         }
 
         Bukkit.getLogger().info("Creating arena " + name);
-        Arena arena = template.createArena();
+
+        ArenaSettings settings = this.settings.createSettings(name);
+        Arena arena = template.createArena(settings);
         arenas.put(name, arena);
 
         return arena;

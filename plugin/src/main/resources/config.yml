@@ -1,73 +1,95 @@
-missiles:
-  CREEPER_SPAWN_EGG:
-    structureName: tomahawk
-    offsetX: 0
-    offsetY: 4
-    offsetZ: 4
-    width: 2
-    height: 2
-    length: 13
-
-  GUARDIAN_SPAWN_EGG:
-    structureName: guardian
-    offsetX: 1
-    offsetY: 4
-    offsetZ: 4
-    width: 3
-    height: 3
-    length: 8
-
-  GHAST_SPAWN_EGG:
-    structureName: juggernaut
-    offsetX: 1
-    offsetY: 4
-    offsetZ: 4
-    width: 3
-    height: 3
-    length: 11
-
-  WITCH_SPAWN_EGG:
-    structureName: shieldbuster
-    offsetX: 1
-    offsetY: 4
-    offsetZ: 4
-    width: 3
-    height: 3
-    length: 15
-
-  OCELOT_SPAWN_EGG:
-    structureName: lightning
-    offsetX: 1
-    offsetY: 4
-    offsetZ: 5
-    width: 3
-    height: 2
-    length: 9
-
-items:
-  - material: CREEPER_SPAWN_EGG
-    name: Tomahawk
-
-  - material: GHAST_SPAWN_EGG
-    name: Juggernaut
-
-  - material: WITCH_SPAWN_EGG
-    name: Shieldbuster
-
-  - material: OCELOT_SPAWN_EGG
-    name: Lightning
-
-  - material: GUARDIAN_SPAWN_EGG
-    name: Guardian
-
-  - material: BLAZE_SPAWN_EGG
-    name: Fireball
-
-  - material: SNOWBALL
-    name: Shield
-
-  - material: ARROW
-    amount: 3
-
-settings:
-  allowSpawningMissilesInEnemyBases: true
+# A list of arenas to create when OpenMissileWars starts. You are free to create more arenas or
+# delete the ones listed here at your leisure
+arenas:
+  - mw1
+# Each arena has a separate config which is derived from the entries below. Each entry below must
+# specify a regular expression which is used to determine whether it applies to an arena. For
+# example, the "mw1" pattern would match just the mw1 arena, the "mw\d+" pattern would match all
+# "mw<number>" arenas and the ".*" pattern matches every arena. Note that if two entries match
+# the same arena name, the first one takes precedence. That said, if a property is not specified
+# in the first matching entry, other matching entries can set it. If no matching entries set a
+# property or if no entries match an arena, a default value will be used
+configs:
+  # Simple base configuration which behaves as similarly to CubeKrowd as possible. If you add
+  # more entries, make sure to add them ABOVE this one otherwise they will be overridden
+  - pattern: .*
+    # Whether to allow players to spawn missiles inside the glass of their enemy's base. Defaults
+    # to true
+    allowSpawningMissilesInEnemyBases: true
+    # Information on which missiles exist, and how they are spawned. Note that these are not
+    # automatically eligible to be given to the player as items. If two config entries specify
+    # this property, the first one completely overrides the second. Defaults to an
+    # empty list
+    missiles:
+      # The Bukkit material name for the item which triggers spawning the missile. See
+      # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html for available materials
+      CREEPER_SPAWN_EGG:
+        # The name of the structure which is spawned. Structures are stored in the
+        # world/generated/openmissilewars/structures directory within the server directory
+        structureName: tomahawk
+        # The offsets from the block which is clicked for the starting bounds of the area in
+        # the missile will be spawned which
+        offsetX: 0
+        offsetY: 4
+        offsetZ: 4
+        # The bounds of the area the missile will spawn in
+        width: 2
+        height: 2
+        length: 13
+      GUARDIAN_SPAWN_EGG:
+        structureName: guardian
+        offsetX: 1
+        offsetY: 4
+        offsetZ: 4
+        width: 3
+        height: 3
+        length: 8
+      GHAST_SPAWN_EGG:
+        structureName: juggernaut
+        offsetX: 1
+        offsetY: 4
+        offsetZ: 4
+        width: 3
+        height: 3
+        length: 11
+      WITCH_SPAWN_EGG:
+        structureName: shieldbuster
+        offsetX: 1
+        offsetY: 4
+        offsetZ: 4
+        width: 3
+        height: 3
+        length: 15
+      OCELOT_SPAWN_EGG:
+        structureName: lightning
+        offsetX: 1
+        offsetY: 4
+        offsetZ: 5
+        width: 3
+        height: 2
+        length: 9
+    # The items which the player can be granted periodically while playing the game. If two
+    # config entries specify this property, the first one completely overrides the second.
+    # Defaults to an empty list
+    items:
+      -
+        # The Bukkit material of the item which will be given to the player
+        material: CREEPER_SPAWN_EGG
+        # The custom name of the item, can be omitted
+        name: Tomahawk
+      - material: GHAST_SPAWN_EGG
+        name: Juggernaut
+      - material: WITCH_SPAWN_EGG
+        name: Shieldbuster
+      - material: OCELOT_SPAWN_EGG
+        name: Lightning
+      - material: GUARDIAN_SPAWN_EGG
+        name: Guardian
+      - material: BLAZE_SPAWN_EGG
+        name: Fireball
+      - material: SNOWBALL
+        name: Shield
+      - material: ARROW
+        # The amount of items to give to the player. If the player receives a drop of this item
+        # and has less than this amount they will be topped up. Can be omitted
+        amount: 3

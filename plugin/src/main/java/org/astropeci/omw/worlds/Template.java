@@ -1,6 +1,8 @@
 package org.astropeci.omw.worlds;
 
 import lombok.RequiredArgsConstructor;
+import org.astropeci.omw.settings.ArenaSettings;
+import org.astropeci.omw.settings.GlobalSettings;
 import org.astropeci.omw.teams.GlobalTeamManager;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
@@ -31,7 +33,7 @@ public class Template {
         worldManager.send(player, getWorld());
     }
 
-    public Arena createArena() {
+    public Arena createArena(ArenaSettings settings) {
         String worldName = "omw-arena-" + UUID.randomUUID();
         Bukkit.getLogger().info("Creating arena " + worldName);
 
@@ -68,7 +70,7 @@ public class Template {
 
         Bukkit.getLogger().info("Completed creating arena " + worldName);
 
-        return new Arena(world, globalTeamManager, worldManager, hub, plugin);
+        return new Arena(settings, world, globalTeamManager, worldManager, hub, plugin);
     }
 
     private World getWorld() {

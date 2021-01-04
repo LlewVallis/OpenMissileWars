@@ -4,6 +4,7 @@ import lombok.SneakyThrows;
 import org.astropeci.omw.commands.*;
 import org.astropeci.omw.item.EquipmentProvider;
 import org.astropeci.omw.listeners.*;
+import org.astropeci.omw.settings.GlobalSettings;
 import org.astropeci.omw.structures.StructureManager;
 import org.astropeci.omw.teams.GameTeam;
 import org.astropeci.omw.teams.GlobalTeamManager;
@@ -35,6 +36,8 @@ public class OpenMissileWarsPlugin extends JavaPlugin {
 
     @SneakyThrows({ ArenaAlreadyExistsException.class })
     private void onServerLoad() {
+        GlobalSettings settings = new GlobalSettings(getConfig());
+
         GlobalTeamManager globalTeamManager = new GlobalTeamManager();
         globalTeamManager.configScoreboard();
 
@@ -47,8 +50,12 @@ public class OpenMissileWarsPlugin extends JavaPlugin {
         Template template = new Template(globalTeamManager, worldManager, hub, this);
         template.createWorldIfMissing();
 
-        arenaPool = new ArenaPool(template);
-        arenaPool.create("mw1");
+        arenaPool = new ArenaPool(settings, template);
+
+        Bukkit.getLogger().info("Creating starting arenas specified in the config: " + String.join(", ", settings.getStartingArenas()));
+        for (String startingArenaName : settings.getStartingArenas()) {
+            arenaPool.create(startingArenaName);
+        }
 
         structureManager = new StructureManager(this, worldManager);
 
@@ -70,6 +77,7 @@ public class OpenMissileWarsPlugin extends JavaPlugin {
         new GithubCommand().register(getCommand("github"));
         new IssueCommand().register(getCommand("issue"));
         new ResetArenaCommand(this, arenaPool).register(getCommand("reset"));
+        new DispenseItemCommand(arenaPool).register(getCommand("item-dispense"));
 
         new StopOverrideCommand().register(getCommand("stop-warning"));
         new RestartOverrideCommand().register(getCommand("restart-warning"));
@@ -84,7 +92,7 @@ public class OpenMissileWarsPlugin extends JavaPlugin {
         registerEventHandler(new WelcomeHandler());
         registerEventHandler(new ChatTransformer(globalTeamManager, arenaPool));
         registerEventHandler(new HungerDisabler());
-        registerEventHandler(new ItemDeployHandler(arenaPool, structureManager, globalTeamManager, this));
+        registerEventHandler(new ItemDeployHandler(settings, arenaPool, structureManager, globalTeamManager, this));
         registerEventHandler(new ItemDropPreventer());
         registerEventHandler(new FireballHandler());
         registerEventHandler(new ShieldHandler(structureManager, globalTeamManager, this));

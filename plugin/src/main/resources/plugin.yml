@@ -103,3 +103,7 @@ commands:
     usage: template
     description: Leave any active game and teleport to the spawn of the template
     permission: omw.template.join
+  item-dispense:
+    usage: item-dispense
+    description: Gives all players in an arena a random item
+    permission: omw.item.dispense

@@ -1,45 +1,43 @@
 package org.astropeci.omw.item;
 
 import com.destroystokyo.paper.Title;
-import lombok.SneakyThrows;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.astropeci.omw.settings.ArenaSettings;
+import org.astropeci.omw.settings.ItemSpec;
 import org.astropeci.omw.teams.GlobalTeamManager;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class PeriodicItemDispenser implements AutoCloseable {
 
     private static final int ITEM_DROP_DELAY = 20 * 15;
 
+    private final ArenaSettings settings;
     private final World world;
     private final GlobalTeamManager globalTeamManager;
     private final Plugin plugin;
 
-    private final Set<ItemStack> items;
-
     private boolean shouldRun = true;
 
-    public PeriodicItemDispenser(World world, GlobalTeamManager globalTeamManager, Plugin plugin) {
+    public PeriodicItemDispenser(ArenaSettings settings, World world, GlobalTeamManager globalTeamManager, Plugin plugin) {
+        this.settings = settings;
         this.world = world;
         this.globalTeamManager = globalTeamManager;
         this.plugin = plugin;
-
-        items = getItemsFromConfig();
     }
 
     public void start() {
@@ -91,21 +89,41 @@ public class PeriodicItemDispenser implements AutoCloseable {
             return;
         }
 
+        dispense();
+
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, this::giveItemsPeriodically, ITEM_DROP_DELAY);
+    }
+
+    public void dispense() {
         Set<Player> players = world.getPlayers().stream()
                 .filter(player -> globalTeamManager.getPlayerTeam(player).isPresent())
                 .filter(player -> player.getGameMode() == GameMode.SURVIVAL)
                 .collect(Collectors.toSet());
 
-        List<ItemStack> itemList = new ArrayList<>(items);
-        Collections.shuffle(itemList);
+        Set<ItemSpec> itemSpecs = settings.getItemSpecs();
+        List<ItemStack> itemStacks = itemSpecs.stream()
+                .map(this::itemSpecToStack)
+                .collect(Collectors.toCollection(ArrayList::new));
 
-        ItemStack item = itemList.get(0);
+        Collections.shuffle(itemStacks);
 
-        for (Player player : players) {
-            giveItem(player, item);
+        if (!itemStacks.isEmpty()) {
+            ItemStack item = itemStacks.get(0);
+            for (Player player : players) {
+                giveItem(player, item);
+            }
         }
+    }
 
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, this::giveItemsPeriodically, ITEM_DROP_DELAY);
+    private ItemStack itemSpecToStack(ItemSpec spec) {
+        ItemStack stack = new ItemStack(spec.getMaterial());
+        ItemMeta meta = stack.getItemMeta();
+
+        stack.setAmount(spec.getAmount());
+        if (spec.getName() != null) meta.setDisplayName(ChatColor.RESET + spec.getName());
+
+        stack.setItemMeta(meta);
+        return stack;
     }
 
     private void giveItem(Player player, ItemStack item) {
@@ -147,66 +165,10 @@ public class PeriodicItemDispenser implements AutoCloseable {
                 result.append(Character.toLowerCase(chr));
             }
 
-            nextCharShouldBeCapitalised = false;
-
-            if (Character.isSpaceChar(chr)) {
-                nextCharShouldBeCapitalised = true;
-            }
+            nextCharShouldBeCapitalised = Character.isSpaceChar(chr);
         }
 
         return result.toString();
-    }
-
-    @SneakyThrows({ InvalidConfigurationException.class })
-    private Set<ItemStack> getItemsFromConfig() {
-        Set<ItemStack> items = new HashSet<>();
-        List<Map<?, ?>> itemConfigurations = plugin.getConfig().getMapList("items");
-
-        for(Map<?, ?> itemConfiguration : itemConfigurations) {
-            Object materialNameObject = getRequiredConfigProperty("material", itemConfiguration);
-            if (!(materialNameObject instanceof String)) {
-                throw new InvalidConfigurationException("item material was not a string");
-            }
-
-            String materialName = (String) materialNameObject;
-            Material material = Material.getMaterial(materialName);
-
-            if (material == null) {
-                throw new InvalidConfigurationException("the material '" + materialName + "' does not exist");
-            }
-
-            ItemStack item = new ItemStack(material);
-            ItemMeta meta = item.getItemMeta();
-
-            Object amountObject = itemConfiguration.get("amount");
-            if (amountObject instanceof Integer) {
-                item.setAmount((Integer) amountObject);;
-            } else if (amountObject != null) {
-                throw new InvalidConfigurationException("item amount was not an integer");
-            }
-
-            Object nameObject = itemConfiguration.get("name");
-            if (nameObject instanceof String) {
-                meta.setDisplayName(ChatColor.RESET.toString() + nameObject);
-            } else if (nameObject != null) {
-                throw new InvalidConfigurationException("item name was not a string");
-            }
-
-            item.setItemMeta(meta);
-            items.add(item);
-        }
-
-        return items;
-    }
-
-    @SneakyThrows({ InvalidConfigurationException.class })
-    private Object getRequiredConfigProperty(String key, Map<?, ?> map) {
-        Object result = map.get(key);
-        if (result == null) {
-            throw new InvalidConfigurationException("the config key '" + key + "' was missing");
-        }
-
-        return result;
     }
 
     @Override

@@ -1,10 +1,12 @@
 package org.astropeci.omw.worlds;
 
 import com.destroystokyo.paper.Title;
+import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.astropeci.omw.FileUtil;
 import org.astropeci.omw.item.PeriodicItemDispenser;
+import org.astropeci.omw.settings.ArenaSettings;
 import org.astropeci.omw.teams.GameTeam;
 import org.astropeci.omw.teams.GlobalTeamManager;
 import org.bukkit.Bukkit;
@@ -25,13 +27,24 @@ public class Arena implements AutoCloseable {
     private final WorldManager worldManager;
     private final Hub hub;
 
+    @Getter
+    private final ArenaSettings settings;
+
     private final PeriodicItemDispenser dispenser;
 
     private boolean ended = false;
 
-    public Arena(World world, GlobalTeamManager globalTeamManager, WorldManager worldManager, Hub hub, Plugin plugin) {
-        dispenser = new PeriodicItemDispenser(world, globalTeamManager, plugin);
+    public Arena(
+            ArenaSettings settings,
+            World world,
+            GlobalTeamManager globalTeamManager,
+            WorldManager worldManager,
+            Hub hub,
+            Plugin plugin
+    ) {
+        dispenser = new PeriodicItemDispenser(settings, world, globalTeamManager, plugin);
 
+        this.settings = settings;
         this.world = world;
         this.worldManager = worldManager;
         this.hub = hub;
@@ -110,5 +123,9 @@ public class Arena implements AutoCloseable {
 
         ended = true;
         return true;
+    }
+
+    public void dispenseItem() {
+        dispenser.dispense();
     }
 }

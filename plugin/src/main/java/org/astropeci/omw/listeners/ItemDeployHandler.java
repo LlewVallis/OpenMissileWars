@@ -1,19 +1,20 @@
 package org.astropeci.omw.listeners;
 
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.astropeci.omw.Settings;
+import org.astropeci.omw.settings.ArenaSettings;
+import org.astropeci.omw.settings.GlobalSettings;
+import org.astropeci.omw.settings.MissileSpec;
 import org.astropeci.omw.structures.NoSuchStructureException;
 import org.astropeci.omw.structures.Structure;
 import org.astropeci.omw.structures.StructureManager;
 import org.astropeci.omw.teams.GameTeam;
 import org.astropeci.omw.teams.GlobalTeamManager;
 import org.astropeci.omw.worlds.ArenaPool;
+import org.astropeci.omw.worlds.NamedArena;
 import org.bukkit.*;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Fireball;
@@ -31,37 +32,14 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+@RequiredArgsConstructor
 public class ItemDeployHandler implements Listener {
 
+    private final GlobalSettings settings;
     private final ArenaPool arenaPool;
     private final StructureManager structureManager;
     private final GlobalTeamManager globalTeamManager;
     private final Plugin plugin;
-
-    private final ConfigurationSection missilesConfiguration;
-    private final Settings settings;
-
-    @SneakyThrows({ InvalidConfigurationException.class })
-    public ItemDeployHandler(
-            ArenaPool arenaPool,
-            StructureManager structureManager,
-            GlobalTeamManager globalTeamManager,
-            Plugin plugin
-    ) {
-        this.arenaPool = arenaPool;
-        this.structureManager = structureManager;
-        this.globalTeamManager = globalTeamManager;
-        this.plugin = plugin;
-
-        FileConfiguration config = plugin.getConfig();
-        missilesConfiguration = config.getConfigurationSection("missiles");
-
-        if (missilesConfiguration == null) {
-            throw new InvalidConfigurationException("config should contain a field named 'missiles'");
-        }
-
-        settings = Settings.fromConfig(config);
-    }
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent e) {
@@ -71,7 +49,8 @@ public class ItemDeployHandler implements Listener {
             return;
         }
 
-        if (arenaPool.getPlayerArena(player).isEmpty()) {
+        NamedArena arena = arenaPool.getPlayerArena(player).orElse(null);
+        if (arena == null) {
             return;
         }
 
@@ -80,11 +59,11 @@ public class ItemDeployHandler implements Listener {
             return;
         }
 
+        ArenaSettings settings = arena.arena.getSettings();
         GameTeam team = teamOptional.get();
         Location target = e.getClickedBlock().getLocation();
 
-        boolean success = deployStructure(team, target.clone(), e) ||
-                deployFireball(e.getMaterial(), target.clone());
+        boolean success = deployStructure(settings, team, target.clone(), e) || deployFireball(e.getMaterial(), target.clone());
 
         if (success) {
             if (player.getGameMode() == GameMode.SURVIVAL) {
@@ -113,7 +92,7 @@ public class ItemDeployHandler implements Listener {
     }
 
     @SneakyThrows({ NoSuchStructureException.class })
-    private boolean deployStructure(GameTeam team, Location target, PlayerInteractEvent e) {
+    private boolean deployStructure(ArenaSettings settings, GameTeam team, Location target, PlayerInteractEvent e) {
         Material material = e.getMaterial();
         Player player = e.getPlayer();
 
@@ -121,21 +100,19 @@ public class ItemDeployHandler implements Listener {
                 Structure.Rotation.ROTATE_180 :
                 Structure.Rotation.ROTATE_0;
 
-        ConfigurationSection missileConfiguration = missilesConfiguration.getConfigurationSection(material.name());
-        if (missileConfiguration == null) {
+        MissileSpec missile = settings.getMissileSpec(material).orElse(null);
+        if (missile == null) {
             // No missile exists for that material
             return false;
         }
 
-        String structureName = missileConfiguration.getString("structureName");
-
-        int offsetX = missileConfiguration.getInt("offsetX");
-        int offsetY = missileConfiguration.getInt("offsetY");
-        int offsetZ = missileConfiguration.getInt("offsetZ");
-
-        int width = missileConfiguration.getInt("width");
-        int height = missileConfiguration.getInt("height");
-        int length = missileConfiguration.getInt("length");
+        String structureName = missile.getStructureName();
+        int offsetX = missile.getOffsetX();
+        int offsetY = missile.getOffsetY();
+        int offsetZ = missile.getOffsetZ();
+        int width = missile.getWidth();
+        int height = missile.getHeight();
+        int length = missile.getLength();
 
         int dirFactorX = team == GameTeam.GREEN ? 1 : -1;
         int dirFactorZ = team == GameTeam.GREEN ? -1 : 1;
@@ -144,7 +121,7 @@ public class ItemDeployHandler implements Listener {
         target.setY(target.getY() - offsetY);
         target.setZ(target.getZ() + dirFactorZ * offsetZ);
 
-        boolean canSpawn = canSpawn(team, target, width, height, length);
+        boolean canSpawn = canSpawn(settings, team, target, width, height, length);
 
         if (!canSpawn) {
             TextComponent message = new TextComponent("You cannot place a " + structureName + " there");
@@ -162,7 +139,7 @@ public class ItemDeployHandler implements Listener {
         return true;
     }
 
-    private boolean canSpawn(GameTeam team, Location location, int width, int height, int length) {
+    private boolean canSpawn(ArenaSettings settings, GameTeam team, Location location, int width, int height, int length) {
         World world = location.getWorld();
 
         int teamDirectionMultiplier = team == GameTeam.GREEN ? -1 : 1;
@@ -181,7 +158,7 @@ public class ItemDeployHandler implements Listener {
                 team == GameTeam.GREEN ? Material.PINK_STAINED_GLASS : Material.LIME_STAINED_GLASS
         );
 
-        if (!settings.isAllowSpawningMissilesInEnemyBases()) {
+        if (!settings.shouldAllowSpawningMissilesInEnemyBases()) {
             friendlyBlocks = new HashSet<>(friendlyBlocks);
             friendlyBlocks.addAll(enemyBlocks);
 
