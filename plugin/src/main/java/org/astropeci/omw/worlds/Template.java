@@ -60,6 +60,7 @@ public class Template {
         }
 
         WorldCreator creator = new WorldCreator(worldName)
+                .type(WorldType.FLAT)
                 .generator(VOID_GENERATOR)
                 .copy(templateWorld);
 
@@ -80,6 +81,7 @@ public class Template {
             Bukkit.getLogger().info("No template world found, generating one");
 
             WorldCreator creator = new WorldCreator(TEMPLATE_WORLD_NAME)
+                    .type(WorldType.FLAT)
                     .generator(VOID_GENERATOR);
 
             World newWorld = creator.createWorld();
