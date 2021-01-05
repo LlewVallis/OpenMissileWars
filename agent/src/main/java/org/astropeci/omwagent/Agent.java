@@ -1,13 +1,20 @@
 package org.astropeci.omwagent;
 
 import javassist.*;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.plugin.Plugin;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.Instrumentation;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.security.ProtectionDomain;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 /**
  * A <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/instrument/package-summary.html">Java Agent</a> which
@@ -32,6 +39,94 @@ public class Agent {
     // not really Java, so some features such as generics are not supported.
 
     /**
+     * A cache for {@link #shouldApplyExplosionDamageCalculatorModification(Object)} since it is called very
+     * frequently within a single explosion.
+     */
+    private static Map<Object, Boolean> shouldApplyExplosionDamageCalculatorModificationCache = new WeakHashMap<>();
+
+    /**
+     * Determines whether or not the explosion damage calculator modification should be used on any given explosion.
+     * Internally this finds the Bukkit world the explosion occurred in and then queries the plugin.
+     */
+    public static boolean shouldApplyExplosionDamageCalculatorModification(Object nmsExplosion) {
+        // This is called a lot, so we're caching the whole operation
+        return shouldApplyExplosionDamageCalculatorModificationCache.computeIfAbsent(nmsExplosion, key -> {
+            try {
+                // Find the private "world" field of the explosion and read from it
+                Class<?> nmsExplosionClass = nmsExplosion.getClass();
+                Field nmsWorldField = getPrivateField(nmsExplosionClass, "world");
+                nmsWorldField.setAccessible(true);
+                Object nmsWorld = nmsWorldField.get(nmsExplosion);
+
+                // Use the public "getWorld" method to get the Bukkit world
+                Class<?> nmsWorldClass = nmsWorld.getClass();
+                Method getWorldMethod = nmsWorldClass.getMethod("getWorld");
+                World world = (World) getWorldMethod.invoke(nmsWorld);
+
+                // Get the plugin
+                Plugin plugin = Bukkit.getPluginManager().getPlugin("OpenMissileWars");
+
+                // Find and invoke the delegate within the plugin to determine whether or not to apply the modification
+                Class<?> pluginClass = plugin.getClass();
+                Method delegate = pluginClass.getMethod("shouldApplyExplosionDamageCalculatorModification", World.class);
+                return (Boolean) delegate.invoke(plugin, world);
+            } catch (Throwable t) {
+                Exception wrapper = new Exception("Unhandled exception in explosion damage calculator modification", t);
+                wrapper.printStackTrace();
+                return false;
+            }
+        });
+    }
+
+    /**
+     * Obtains a field object for declared field in the provided class or any of its superclasses.
+     */
+    private static Field getPrivateField(Class<?> cls, String name) throws NoSuchFieldException {
+        try {
+            // This method does not work for private fields in superclasses
+            return cls.getDeclaredField(name);
+        } catch (NoSuchFieldException e) {
+            // If the field could not be found and class has a superclass, recurse
+            Class<?> superClass = cls.getSuperclass();
+            if (superClass != null) {
+                return getPrivateField(superClass, name);
+            }
+
+            throw e;
+        }
+    }
+
+    /**
+     * Determines whether or not to override the push reaction for any given fireball. Internally this finds the Bukkit
+     * world of the fireball and then queries the plugin.
+     */
+    public static boolean shouldApplyFireballPushModification(Object nmsFireball) {
+        try {
+            // Find the public "world" field of the fireball and read from it
+            Class<?> nmsFireballClass = nmsFireball.getClass();
+            Field nmsWorldField = nmsFireballClass.getField("world");
+            Object nmsWorld = nmsWorldField.get(nmsFireball);
+
+            // Use the public "getWorld" method to get the Bukkit world
+            Class<?> nmsWorldClass = nmsWorld.getClass();
+            Method getWorldMethod = nmsWorldClass.getMethod("getWorld");
+            World world = (World) getWorldMethod.invoke(nmsWorld);
+
+            // Get the plugin
+            Plugin plugin = Bukkit.getPluginManager().getPlugin("OpenMissileWars");
+            Class<?> pluginClass = plugin.getClass();
+
+            // Find and invoke the delegate within the plugin to determine whether or not to apply the modification
+            Method delegate = pluginClass.getMethod("shouldApplyFireballPushModification", World.class);
+            return (Boolean) delegate.invoke(plugin, world);
+        } catch (Throwable t) {
+            Exception wrapper = new Exception("Unhandled exception in fireball push modification", t);
+            wrapper.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
      * The injection string which modifies the blast resistance of moving piston blocks.
      *
      * This string is injected into the ExplosionDamageCalculator NMS class at the top of the method which returns an
@@ -40,18 +135,22 @@ public class Agent {
      */
     private static final String EXPLOSION_DAMAGE_CALCULATOR_INJECTION =
             "{\n" +
-                    // Gets the block being exploded
-                    "$NMS.Block block = $4.getBlock();\n" +
-                    // If it is a moving piston block
-                    "if (block instanceof $NMS.BlockPistonMoving) {\n" +
-                    //   Then get the tile entity associated with it
-                    "    $NMS.TileEntity tileEntity = $1.source.getWorld().getTileEntity($3);\n" +
-                    //   If the tile entity is a piston tile entity (which it should be)
-                    "    if (tileEntity instanceof $NMS.TileEntityPiston) {\n" +
-                    "        $NMS.TileEntityPiston tileEntityPiston = ($NMS.TileEntityPiston) tileEntity;\n" +
-                    //       Then calculate the durability, taking into account any fluids which may be present
-                    "        float durability = Math.max($5.i(), tileEntityPiston.k().getBlock().getDurability());\n" +
-                    "        return java.util.Optional.of(Float.valueOf(durability));\n" +
+                    // Determine whether we want to use the modification
+                    "boolean shouldUse = org.astropeci.omwagent.Agent.shouldApplyExplosionDamageCalculatorModification($1);\n" +
+                    "if (shouldUse) {\n" +
+                    //   Gets the block being exploded
+                    "    $NMS.Block block = $4.getBlock();\n" +
+                    //   If it is a moving piston block
+                    "    if (block instanceof $NMS.BlockPistonMoving) {\n" +
+                    //       Then get the tile entity associated with it
+                    "        $NMS.TileEntity tileEntity = $1.source.getWorld().getTileEntity($3);\n" +
+                    //       If the tile entity is a piston tile entity (which it should be)
+                    "        if (tileEntity instanceof $NMS.TileEntityPiston) {\n" +
+                    "            $NMS.TileEntityPiston tileEntityPiston = ($NMS.TileEntityPiston) tileEntity;\n" +
+                    //           Then calculate the durability, taking into account any fluids which may be present
+                    "            float durability = Math.max($5.i(), tileEntityPiston.k().getBlock().getDurability());\n" +
+                    "            return java.util.Optional.of(Float.valueOf(durability));\n" +
+                    "        }\n" +
                     "    }\n" +
                     "}\n" +
                     "}";
@@ -64,10 +163,16 @@ public class Agent {
      */
     private static final String FIREBALL_PUSH_INJECTION =
             "public $NMS.EnumPistonReaction getPushReaction() {\n" +
-                    // Set the piston reaction to IGNORE so fireballs can't be pushed
-                    "return $NMS.EnumPistonReaction.IGNORE;\n" +
+                    // Determine whether we want to use the modification
+                    "boolean shouldUse = org.astropeci.omwagent.Agent.shouldApplyFireballPushModification(this);\n" +
+                    "if (shouldUse) {\n" +
+                    //   If we do, set the piston reaction to IGNORE so fireballs can't be pushed
+                    "    return $NMS.EnumPistonReaction.IGNORE;\n" +
+                    "} else {\n" +
+                    //   If we don't use, the default for entities
+                    "    return super.getPushReaction();\n" +
+                    "}\n" +
                     "}";
-
 
     /**
      * Stores classes as they are being loaded by the JVM.

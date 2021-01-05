@@ -10,11 +10,15 @@ import org.astropeci.omw.teams.GameTeam;
 import org.astropeci.omw.teams.GlobalTeamManager;
 import org.astropeci.omw.worlds.*;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.ServerLoadEvent;
 import org.bukkit.generator.ChunkGenerator;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.Optional;
 
 public class OpenMissileWarsPlugin extends JavaPlugin {
 
@@ -122,5 +126,19 @@ public class OpenMissileWarsPlugin extends JavaPlugin {
     public void onDisable() {
         if (arenaPool != null) arenaPool.close();
         if (structureManager != null) structureManager.close();
+    }
+
+    // Invoked by the OpenMissileWars agent
+    public boolean shouldApplyExplosionDamageCalculatorModification(World world) {
+        return arenaPool.getArenaForWorld(world)
+                .map(arena -> arena.arena.getSettings().shouldImproveExplosionDamageCalculation())
+                .orElse(false);
+    }
+
+    // Invoked by the OpenMissileWars agent
+    public boolean shouldApplyFireballPushModification(World world) {
+        return arenaPool.getArenaForWorld(world)
+                .map(arena -> arena.arena.getSettings().shouldPreventFireballPushing())
+                .orElse(false);
     }
 }

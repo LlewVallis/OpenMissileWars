@@ -1,7 +1,8 @@
 # A list of arenas to create when OpenMissileWars starts. You are free to create more arenas or
 # delete the ones listed here at your leisure
 arenas:
-  - mw1
+  - vanilla
+  - enhanced
 # Each arena has a separate config which is derived from the entries below. Each entry below must
 # specify a regular expression which is used to determine whether it applies to an arena. For
 # example, the "mw1" pattern would match just the mw1 arena, the "mw\d+" pattern would match all
@@ -10,12 +11,22 @@ arenas:
 # in the first matching entry, other matching entries can set it. If no matching entries set a
 # property or if no entries match an arena, a default value will be used
 configs:
+  # Configuration for the enhanced version of the game built into OpenMissileWars. See the
+  # entries below for documentation
+  - pattern: enhanced
+    improveExplosionDamageCalculation: true
+    preventFireballPushing: true
   # Simple base configuration which behaves as similarly to CubeKrowd as possible. If you add
   # more entries, make sure to add them ABOVE this one otherwise they will be overridden
   - pattern: .*
-    # Whether to allow players to spawn missiles inside the glass of their enemy's base. Defaults
-    # to true
-    allowSpawningMissilesInEnemyBases: true
+    # Whether to prevent players to spawn missiles inside the glass of their enemy's base.
+    # Defaults to false
+    preventSpawningMissilesInEnemyBases: false
+    # Whether to use the improved explosion damage calculation algorithm which doesn't lower the
+    # blast resistance of blocks which are being pushed. Defaults to false
+    improveExplosionDamageCalculation: false
+    # Whether to prevent pistons and moving slime blocks from pushing fireballs. Defaults to false
+    preventFireballPushing: false
     # Information on which missiles exist, and how they are spawned. Note that these are not
     # automatically eligible to be given to the player as items. If two config entries specify
     # this property, the first one completely overrides the second. Defaults to an

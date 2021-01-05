@@ -13,14 +13,18 @@ import static org.astropeci.omw.settings.ConfigUtil.*;
 @NoArgsConstructor
 public class ArenaSettings {
 
-    private Boolean allowSpawningMissilesInEnemyBases = null;
+    private Boolean preventSpawningMissilesInEnemyBases = null;
+    private Boolean improveExplosionDamageCalculation = null;
+    private Boolean preventFireballPushing = null;
 
     private Map<Material, MissileSpec> missileSpecs = null;
     private Set<ItemSpec> itemSpecs = null;
 
     @SneakyThrows({ })
     public ArenaSettings(Map<?, ?> map) {
-        allowSpawningMissilesInEnemyBases = getBooleanOrNull(map, "allowSpawningMissilesInEnemyBases");
+        preventSpawningMissilesInEnemyBases = getBooleanOrNull(map, "preventSpawningMissilesInEnemyBases");
+        improveExplosionDamageCalculation = getBooleanOrNull(map, "improveExplosionDamageCalculation");
+        preventFireballPushing = getBooleanOrNull(map, "preventFireballPushing");
 
         Map<?, ?> missilesConfig = getMapOrNull(map, "missiles");
         if (missilesConfig != null) {
@@ -55,7 +59,10 @@ public class ArenaSettings {
     public ArenaSettings merge(ArenaSettings other) {
         ArenaSettings result = new ArenaSettings();
 
-        result.allowSpawningMissilesInEnemyBases = merge(allowSpawningMissilesInEnemyBases, other.allowSpawningMissilesInEnemyBases);
+        result.preventSpawningMissilesInEnemyBases = merge(preventSpawningMissilesInEnemyBases, other.preventSpawningMissilesInEnemyBases);
+        result.improveExplosionDamageCalculation = merge(improveExplosionDamageCalculation, other.improveExplosionDamageCalculation);
+        result.preventFireballPushing = merge(preventFireballPushing, other.preventFireballPushing);
+
         result.missileSpecs = merge(missileSpecs, other.missileSpecs);
         result.itemSpecs = merge(itemSpecs, other.itemSpecs);
 
@@ -82,7 +89,15 @@ public class ArenaSettings {
         }
     }
 
-    public boolean shouldAllowSpawningMissilesInEnemyBases() {
-        return Objects.requireNonNullElse(allowSpawningMissilesInEnemyBases, true);
+    public boolean preventSpawningMissilesInEnemyBases() {
+        return Objects.requireNonNullElse(preventSpawningMissilesInEnemyBases, false);
+    }
+
+    public boolean shouldImproveExplosionDamageCalculation() {
+        return Objects.requireNonNullElse(improveExplosionDamageCalculation, false);
+    }
+
+    public boolean shouldPreventFireballPushing() {
+        return Objects.requireNonNullElse(preventFireballPushing, false);
     }
 }

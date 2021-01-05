@@ -171,10 +171,11 @@ async function onConnect() {
   succeed();
 }
 
-// Sets up for an experiment by joining the green team in mw1 and obtaining a stack of every missile
+// Sets up for an experiment by joining the green team in the vanilla arena and obtaining a stack
+// of every missile
 async function setupExperiment() {
   log("Joining arena");
-  bot.chat("/arena mw1");
+  bot.chat("/arena vanilla");
   await uponEvent("spawn", SMALL_OPERATION_TIMEOUT);
 
   log("Waiting for chunks")

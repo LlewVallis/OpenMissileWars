@@ -158,7 +158,7 @@ public class ItemDeployHandler implements Listener {
                 team == GameTeam.GREEN ? Material.PINK_STAINED_GLASS : Material.LIME_STAINED_GLASS
         );
 
-        if (!settings.shouldAllowSpawningMissilesInEnemyBases()) {
+        if (settings.preventSpawningMissilesInEnemyBases()) {
             friendlyBlocks = new HashSet<>(friendlyBlocks);
             friendlyBlocks.addAll(enemyBlocks);
 
