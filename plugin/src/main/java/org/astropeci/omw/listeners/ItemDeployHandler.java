@@ -209,12 +209,12 @@ public class ItemDeployHandler implements Listener {
         World world = target.getWorld();
         target.add(0.5, 2, 0.5);
 
-        ArmorStand fireballHolder = (ArmorStand) world.spawnEntity(target, EntityType.ARMOR_STAND);
-
-        fireballHolder.setMarker(true);
-        fireballHolder.setGravity(false);
-        fireballHolder.setCollidable(false);
-        fireballHolder.setVisible(false);
+        ArmorStand fireballHolder = world.spawn(target, ArmorStand.class, armourStand -> {
+            armourStand.setMarker(true);
+            armourStand.setGravity(false);
+            armourStand.setCollidable(false);
+            armourStand.setVisible(false);
+        });
 
         Fireball fireball = (Fireball) world.spawnEntity(target, EntityType.FIREBALL);
         fireball.setVelocity(new Vector(0, 1, 0));
