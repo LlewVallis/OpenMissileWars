@@ -9,6 +9,9 @@ load: STARTUP
 depend:
   - ProtocolLib
   - StructureBlockLib
+libraries:
+  - com.github.shynixn.structureblocklib:structureblocklib-bukkit-api:2.2.2
+  - com.github.shynixn.structureblocklib:structureblocklib-bukkit-core:2.2.2
 permissions:
   omw.arena.join:
     default: true

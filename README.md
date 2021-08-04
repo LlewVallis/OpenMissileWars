@@ -1,3 +1,10 @@
+![OpenMissileWars banner](https://user-images.githubusercontent.com/20552946/110436923-82d65600-8100-11eb-8670-f163814b46b6.png)
+
+> **Help wanted**
+> 
+> Unfortunately I have less time than I would like to keep up with the continuous development that this project demands.
+> If you have an interest in working on the project, or if you need a hand with anything, feel free to reach out to me on [my website](https://llew.netlify.app).
+
 # OpenMissileWars
 
 [![Build Status](https://travis-ci.com/LlewVallis/OpenMissileWars.svg?branch=master)](https://travis-ci.com/LlewVallis/OpenMissileWars)
